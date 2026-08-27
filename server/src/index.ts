@@ -10,8 +10,23 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
+const configuredOrigins = process.env.CORS_ORIGIN
+  ?.split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const isLocalDevelopmentOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+    const isConfiguredOrigin = configuredOrigins?.includes(origin) ?? false;
+
+    callback(null, isLocalDevelopmentOrigin || isConfiguredOrigin);
+  },
   credentials: true,
 }));
 

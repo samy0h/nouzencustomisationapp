@@ -21,6 +21,13 @@ export default function ProductDetail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
 
+  const printableBounds = {
+    left: 108,
+    top: 82,
+    width: 184,
+    height: 330,
+  };
+
   // Get unique colors from variants
   const availableColors = useMemo(() => {
     if (!product) return [];
@@ -82,8 +89,9 @@ export default function ProductDetail() {
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: 400,
       height: 500,
-      backgroundColor: 'rgba(0,0,0,0.02)',
+      backgroundColor: 'transparent',
       selection: true,
+      preserveObjectStacking: true,
     });
 
     fabricCanvasRef.current = canvas;
@@ -92,7 +100,7 @@ export default function ProductDetail() {
       canvas.dispose();
       fabricCanvasRef.current = null;
     };
-  }, []);
+  }, [product]);
 
   // Handle image upload
   const handleAddImage = () => {
@@ -113,14 +121,14 @@ export default function ProductDetail() {
 
           const canvas = fabricCanvasRef.current;
           const scale = Math.min(
-            (canvas.width! * 0.5) / img.width!,
-            (canvas.height! * 0.5) / img.height!
+            (printableBounds.width * 0.85) / img.width!,
+            (printableBounds.height * 0.85) / img.height!
           );
 
           img.scale(scale);
           img.set({
-            left: canvas.width! / 2,
-            top: canvas.height! / 2,
+            left: printableBounds.left + printableBounds.width / 2,
+            top: printableBounds.top + printableBounds.height / 2,
             originX: 'center',
             originY: 'center',
             cornerStyle: 'circle',
@@ -148,12 +156,12 @@ export default function ProductDetail() {
     if (!fabricCanvasRef.current) return;
 
     const canvas = fabricCanvasRef.current;
-    const text = new fabric.IText('Votre texte', {
-      left: canvas.width! / 2,
-      top: canvas.height! / 2,
+    const text = new fabric.IText('Your text', {
+      left: printableBounds.left + printableBounds.width / 2,
+      top: printableBounds.top + printableBounds.height / 2,
       originX: 'center',
       originY: 'center',
-      fontSize: 32,
+      fontSize: 30,
       fill: '#000000',
       fontFamily: 'Montserrat',
       cornerStyle: 'circle',
