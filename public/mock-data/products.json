@@ -1,0 +1,136 @@
+{
+  "products": [
+    {
+      "id": "tshirt-standard",
+      "name": "T-Shirt Standard",
+      "category": "tshirt",
+      "basePrice": 25.00,
+      "description": "Classic fit, crew neck t-shirt",
+      "colors": [
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "frontMockup": "/mock-data/product-images/tshirt-standard/white-front.png",
+          "backMockup": "/mock-data/product-images/tshirt-standard/white-back.png"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "frontMockup": "/mock-data/product-images/tshirt-standard/black-front.png",
+          "backMockup": "/mock-data/product-images/tshirt-standard/black-back.png"
+        },
+        {
+          "name": "Navy",
+          "hex": "#1E3A8A",
+          "frontMockup": "/mock-data/product-images/tshirt-standard/navy-front.png",
+          "backMockup": "/mock-data/product-images/tshirt-standard/navy-back.png"
+        }
+      ],
+      "sizes": ["XS", "S", "M", "L", "XL", "2XL", "3XL"],
+      "printArea": {
+        "front": { "width": 12, "height": 16, "unit": "inches" },
+        "back": { "width": 12, "height": 16, "unit": "inches" }
+      },
+      "thumbnail": "/mock-data/product-images/tshirt-standard/thumbnail.png"
+    },
+    {
+      "id": "tshirt-oversized",
+      "name": "T-Shirt Oversized",
+      "category": "tshirt",
+      "basePrice": 30.00,
+      "description": "Relaxed oversized fit t-shirt",
+      "colors": [
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "frontMockup": "/mock-data/product-images/tshirt-oversized/white-front.png",
+          "backMockup": "/mock-data/product-images/tshirt-oversized/white-back.png"
+        },
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "frontMockup": "/mock-data/product-images/tshirt-oversized/black-front.png",
+          "backMockup": "/mock-data/product-images/tshirt-oversized/black-back.png"
+        },
+        {
+          "name": "Gray",
+          "hex": "#6B7280",
+          "frontMockup": "/mock-data/product-images/tshirt-oversized/gray-front.png",
+          "backMockup": "/mock-data/product-images/tshirt-oversized/gray-back.png"
+        }
+      ],
+      "sizes": ["S", "M", "L", "XL", "2XL"],
+      "printArea": {
+        "front": { "width": 14, "height": 18, "unit": "inches" },
+        "back": { "width": 14, "height": 18, "unit": "inches" }
+      },
+      "thumbnail": "/mock-data/product-images/tshirt-oversized/thumbnail.png"
+    },
+    {
+      "id": "hoodie",
+      "name": "Hoodie",
+      "category": "hoodie",
+      "basePrice": 45.00,
+      "description": "Comfortable pullover hoodie",
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "frontMockup": "/mock-data/product-images/hoodie/black-front.png",
+          "backMockup": "/mock-data/product-images/hoodie/black-back.png"
+        },
+        {
+          "name": "Navy",
+          "hex": "#1E3A8A",
+          "frontMockup": "/mock-data/product-images/hoodie/navy-front.png",
+          "backMockup": "/mock-data/product-images/hoodie/navy-back.png"
+        },
+        {
+          "name": "Gray",
+          "hex": "#6B7280",
+          "frontMockup": "/mock-data/product-images/hoodie/gray-front.png",
+          "backMockup": "/mock-data/product-images/hoodie/gray-back.png"
+        }
+      ],
+      "sizes": ["S", "M", "L", "XL", "2XL", "3XL"],
+      "printArea": {
+        "front": { "width": 10, "height": 12, "unit": "inches" },
+        "back": { "width": 12, "height": 16, "unit": "inches" }
+      },
+      "thumbnail": "/mock-data/product-images/hoodie/thumbnail.png"
+    },
+    {
+      "id": "jogger",
+      "name": "Jogger",
+      "category": "jogger",
+      "basePrice": 40.00,
+      "description": "Comfortable athletic jogger pants",
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "frontMockup": "/mock-data/product-images/jogger/black-front.png",
+          "backMockup": "/mock-data/product-images/jogger/black-back.png"
+        },
+        {
+          "name": "Navy",
+          "hex": "#1E3A8A",
+          "frontMockup": "/mock-data/product-images/jogger/navy-front.png",
+          "backMockup": "/mock-data/product-images/jogger/navy-back.png"
+        },
+        {
+          "name": "Gray",
+          "hex": "#6B7280",
+          "frontMockup": "/mock-data/product-images/jogger/gray-front.png",
+          "backMockup": "/mock-data/product-images/jogger/gray-back.png"
+        }
+      ],
+      "sizes": ["XS", "S", "M", "L", "XL", "2XL"],
+      "printArea": {
+        "front": { "width": 8, "height": 10, "unit": "inches" },
+        "back": { "width": 8, "height": 10, "unit": "inches" }
+      },
+      "thumbnail": "/mock-data/product-images/jogger/thumbnail.png"
+    }
+  ]
+}
