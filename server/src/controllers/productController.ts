@@ -102,6 +102,8 @@ export const getProductBySlug = asyncHandler(async (req: Request, res: Response)
           available: true,
         },
       },
+      productImages: { include: { variants: true } },
+      printAreas: true,
     },
   });
 
@@ -115,4 +117,53 @@ export const getProductBySlug = asyncHandler(async (req: Request, res: Response)
       product,
     },
   });
+});
+
+export const getAdminProduct = asyncHandler(async (req: Request, res: Response) => {
+  const product = await prisma.product.findUnique({
+    where: { id: String(req.params.id) },
+    include: {
+      variants: { orderBy: [{ color: 'asc' }, { size: 'asc' }] },
+      productImages: { include: { variants: true }, orderBy: { sortOrder: 'asc' } },
+      printAreas: true,
+    },
+  });
+
+  if (!product) throw new AppError('Product not found', 404);
+  res.json({ status: 'success', data: { product } });
+});
+
+export const saveAdminProductDesign = asyncHandler(async (req: Request, res: Response) => {
+  const { images = [], printAreas = [] } = req.body as {
+    images?: Array<{ color: string; side: 'FRONT' | 'BACK'; url: string; fileName?: string; variantIds?: string[] }>;
+    printAreas?: Array<{ side: 'FRONT' | 'BACK'; x: number; y: number; width: number; height: number; enabled: boolean }>;
+  };
+  const product = await prisma.product.findUnique({ where: { id: String(req.params.id) } });
+  if (!product) throw new AppError('Product not found', 404);
+
+  await prisma.$transaction(async transaction => {
+    for (const image of images) {
+      const savedImage = await transaction.productImage.upsert({
+        where: { productId_color_side: { productId: product.id, color: image.color, side: image.side } },
+        update: { url: image.url, fileName: image.fileName },
+        create: { productId: product.id, color: image.color, side: image.side, url: image.url, fileName: image.fileName },
+      });
+      await transaction.variantImage.deleteMany({ where: { imageId: savedImage.id } });
+      if (image.variantIds?.length) {
+        await transaction.variantImage.createMany({
+          data: image.variantIds.map(variantId => ({ variantId, imageId: savedImage.id })),
+          skipDuplicates: true,
+        });
+      }
+    }
+    for (const area of printAreas) {
+      await transaction.printArea.upsert({
+        where: { productId_side: { productId: product.id, side: area.side } },
+        update: area,
+        create: { productId: product.id, ...area },
+      });
+    }
+  });
+
+  res.json({ status: 'success', message: 'Product design settings saved' });
 });

@@ -269,6 +269,35 @@
   border-radius: 10px;
 }
 
+.object-name {
+  min-width: 0;
+  max-width: 180px;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.object-action-btn {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border: 1px solid var(--border-color);
+  border-radius: 7px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.object-action-btn:hover {
+  border-color: var(--crimson);
+  color: var(--crimson);
+}
+
 .text-control {
   display: flex;
   flex-direction: column;
@@ -319,9 +348,22 @@
   background: rgba(160, 2, 35, 0.08);
 }
 
+.image-controls .remove-text-btn {
+  width: auto;
+  padding: 0 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 @media (max-width: 480px) {
   .text-controls {
     align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .object-name {
+    width: 100%;
+    max-width: none;
   }
 
   .font-select {

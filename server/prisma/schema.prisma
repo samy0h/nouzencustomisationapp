@@ -33,6 +33,8 @@ model Product {
   categoryId          String
   category            Category         @relation(fields: [categoryId], references: [id])
   variants            ProductVariant[]
+  productImages       ProductImage[]
+  printAreas          PrintArea[]
   orderItems          OrderItem[]
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
@@ -58,10 +60,57 @@ model ProductVariant {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   orderItems    OrderItem[]
+  imageLinks    VariantImage[]
 
   @@unique([productId, color, size])
   @@index([productId])
   @@index([available])
+}
+
+enum ImageSide {
+  FRONT
+  BACK
+}
+
+model ProductImage {
+  id         String         @id @default(uuid())
+  productId  String
+  product    Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color      String
+  side       ImageSide
+  url        String
+  fileName   String?
+  sortOrder  Int            @default(0)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  variants   VariantImage[]
+
+  @@unique([productId, color, side])
+  @@index([productId, color, side])
+}
+
+model VariantImage {
+  variantId String
+  imageId   String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  image     ProductImage   @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, imageId])
+}
+
+model PrintArea {
+  id        String    @id @default(uuid())
+  productId String
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  side      ImageSide
+  x         Float     @default(0.27)
+  y         Float     @default(0.165)
+  width     Float     @default(0.46)
+  height    Float     @default(0.66)
+  enabled   Boolean   @default(true)
+  updatedAt DateTime  @updatedAt
+
+  @@unique([productId, side])
 }
 
 model Order {

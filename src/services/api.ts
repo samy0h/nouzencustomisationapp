@@ -1,4 +1,4 @@
-import type { ApiProductsResponse, ApiProductResponse } from '../types';
+import type { ApiProductsResponse, ApiProductResponse, AdminProductImage, PrintAreaConfig } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -90,6 +90,13 @@ export const api = {
   healthCheck: async (): Promise<{ status: string; message: string; timestamp: string }> => {
     return fetchApi('/api/health');
   },
+
+  getAdminProduct: async (id: string) => fetchApi<{ status: string; data: { product: ApiProductResponse['data']['product'] & { productImages: AdminProductImage[]; printAreas: PrintAreaConfig[] } } }>(`/api/products/admin/${id}`),
+
+  saveAdminProductDesign: async (id: string, payload: { images: unknown[]; printAreas: PrintAreaConfig[] }) => fetchApi(`/api/products/admin/${id}/design`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  }),
 };
 
 export { ApiError };

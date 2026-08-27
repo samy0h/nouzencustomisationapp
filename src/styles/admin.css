@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+.admin-page { min-height: 100vh; background: #f4f1ec; color: #202124; font-family: 'DM Sans', sans-serif; padding: 2rem; }
+.admin-shell { max-width: 1180px; margin: 0 auto; }
+.admin-back { color: #6d6259; text-decoration: none; font-size: .85rem; }
+.admin-header { display: flex; justify-content: space-between; align-items: end; gap: 2rem; margin: 2.5rem 0 2rem; }
+.admin-header h1 { font: 700 clamp(2rem, 4vw, 3.4rem) 'Space Grotesk', sans-serif; margin: .35rem 0; letter-spacing: 0; }
+.admin-header p, .admin-help { color: #766c64; margin: 0; }
+.admin-eyebrow { color: #a00223; font-size: .7rem; font-weight: 700; letter-spacing: .14em; }
+.admin-product-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.admin-product-card { display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; background: #fff; color: inherit; text-decoration: none; border: 1px solid #e2dbd4; border-radius: 10px; padding: 1rem; }
+.admin-product-card:hover { border-color: #a00223; transform: translateY(-2px); }
+.admin-product-card h2 { font: 600 1.05rem 'Space Grotesk', sans-serif; margin: 0 0 .25rem; }
+.admin-product-card p { color: #877b72; margin: 0; font-size: .8rem; }
+.admin-product-card > span { color: #a00223; font-size: 1.4rem; }
+.admin-product-thumb { aspect-ratio: 1; background: #f6f4f1; border-radius: 7px; display: grid; place-items: center; overflow: hidden; }
+.admin-product-thumb img { width: 100%; height: 100%; object-fit: contain; }
+.admin-editor-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 1rem; }
+.admin-panel { background: #fff; border: 1px solid #e2dbd4; border-radius: 10px; padding: 1.25rem; }
+.admin-panel h2 { font: 600 1.15rem 'Space Grotesk', sans-serif; margin: 0 0 1.25rem; }
+.admin-panel h3 { font-size: .85rem; margin: 1.5rem 0 .7rem; }
+.admin-fields { display: grid; gap: .9rem; }
+.admin-fields label, .admin-segmented { display: grid; gap: .4rem; color: #6d6259; font-size: .78rem; font-weight: 600; }
+.admin-fields select { border: 1px solid #d9d0c8; border-radius: 7px; padding: .7rem; background: #fff; font: inherit; }
+.admin-segmented { grid-template-columns: auto 1fr 1fr; align-items: center; }
+.admin-segmented button, .admin-save { border: 0; border-radius: 7px; padding: .7rem 1rem; background: #eee9e4; cursor: pointer; font: 600 .8rem 'DM Sans', sans-serif; }
+.admin-segmented button.selected, .admin-save { background: #a00223; color: #fff; }
+.admin-save { font-size: .9rem; padding: .8rem 1.25rem; }
+.admin-upload { border: 1px dashed #b9ada2; padding: 1rem; border-radius: 7px; cursor: pointer; text-align: center; }
+.admin-upload input { display: block; width: 100%; margin-top: .5rem; }
+.admin-file, .admin-message, .admin-error { color: #a00223; font-size: .82rem; }
+.variant-checks { display: flex; flex-wrap: wrap; gap: .6rem; }
+.variant-checks label, .admin-toggle { display: flex; gap: .4rem; align-items: center; background: #f4f1ec; border-radius: 6px; padding: .55rem .7rem; font-size: .8rem; }
+.admin-stage { position: relative; max-width: 480px; aspect-ratio: 4 / 5; margin: 1rem auto; background: #f6f4f1; overflow: hidden; border-radius: 8px; touch-action: none; }
+.admin-stage > img { width: 100%; height: 100%; object-fit: contain; }
+.admin-print-area { position: absolute; border: 2px solid #a00223; background: rgba(160, 2, 35, .12); cursor: move; touch-action: none; }
+.admin-print-area button { position: absolute; right: -12px; bottom: -12px; width: 25px; height: 25px; border: 0; border-radius: 50%; background: #a00223; color: #fff; cursor: nwse-resize; }
+@media (max-width: 760px) { .admin-page { padding: 1rem; } .admin-header, .admin-editor-grid { display: block; } .admin-save { margin-top: 1rem; width: 100%; } .admin-panel + .admin-panel { margin-top: 1rem; } }

@@ -4,6 +4,8 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { Catalog } from './pages/Catalog';
 import ProductDetail from './pages/ProductDetail';
 import Customizer from './pages/Customizer';
+import AdminProducts from './pages/AdminProducts';
+import AdminProductEditor from './pages/AdminProductEditor';
 import './styles/catalog.css';
 
 function App() {
@@ -16,6 +18,8 @@ function App() {
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/custom/product/:slug" element={<ProductDetail />} />
             <Route path="/custom/product/:slug/customize" element={<Customizer />} />
+            <Route path="/admin" element={<AdminProducts />} />
+            <Route path="/admin/products/:id" element={<AdminProductEditor />} />
             <Route path="*" element={<Navigate to="/catalog" replace />} />
           </Routes>
         </BrowserRouter>

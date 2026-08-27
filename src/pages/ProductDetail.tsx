@@ -18,6 +18,8 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [printingSide, setPrintingSide] = useState<PrintingSide>('FRONT');
   const [selectedTextObject, setSelectedTextObject] = useState<fabric.IText | null>(null);
+  const [selectedObject, setSelectedObject] = useState<fabric.Object | null>(null);
+  const [selectedImageName, setSelectedImageName] = useState('');
   const [selectedFont, setSelectedFont] = useState('Bebas Neue');
   const [selectedTextColor, setSelectedTextColor] = useState('#ffffff');
 
@@ -29,12 +31,23 @@ export default function ProductDetail() {
     BOTH: null,
   });
 
-  const printableBounds = {
+  const defaultPrintableBounds = {
     left: 216,
     top: 164,
     width: 368,
     height: 660,
   };
+
+  const configuredPrintArea = product?.printAreas?.find(area => area.side === printingSide);
+  const printAreaEnabled = configuredPrintArea?.enabled ?? true;
+  const printableBounds = configuredPrintArea
+    ? {
+      left: configuredPrintArea.x * 800,
+      top: configuredPrintArea.y * 1000,
+      width: configuredPrintArea.width * 800,
+      height: configuredPrintArea.height * 1000,
+    }
+    : defaultPrintableBounds;
 
   const createPrintableClipPath = () => new fabric.Rect({
     left: printableBounds.left + printableBounds.width / 2,
@@ -56,7 +69,7 @@ export default function ProductDetail() {
 
   const saveCanvasForSide = (side: PrintingSide) => {
     if (fabricCanvasRef.current) {
-      designsBySideRef.current[side] = fabricCanvasRef.current.toJSON();
+      designsBySideRef.current[side] = fabricCanvasRef.current.toJSON(['fileName']);
     }
   };
 
@@ -99,6 +112,11 @@ export default function ProductDetail() {
       return product?.images?.[0] || '';
     }
 
+    const configuredImage = product.productImages?.find(image =>
+      image.color === selectedColor && image.side === (printingSide === 'BACK' ? 'BACK' : 'FRONT')
+    );
+    if (configuredImage) return configuredImage.url;
+
     const side = product.supportsDoublePrint && printingSide === 'BACK' ? 'back' : 'front';
     return getProductImage(slug, selectedColor, side);
   }, [selectedColor, printingSide, product, slug]);
@@ -130,7 +148,7 @@ export default function ProductDetail() {
       selection: true,
       preserveObjectStacking: true,
       enableRetinaScaling: true,
-      clipPath: createPrintableClipPath(),
+        clipPath: printAreaEnabled ? createPrintableClipPath() : undefined,
     });
 
     fabricCanvasRef.current = canvas;
@@ -139,11 +157,16 @@ export default function ProductDetail() {
       const activeObject = canvas.getActiveObject();
       if (!activeObject || activeObject.type !== 'i-text') {
         setSelectedTextObject(null);
+        setSelectedObject(activeObject || null);
+        const imageObject = activeObject as (fabric.Object & { fileName?: string }) | null;
+        setSelectedImageName(activeObject?.type === 'image' ? String(imageObject?.fileName || '') : '');
         return;
       }
 
       const textObject = activeObject as fabric.IText;
       setSelectedTextObject(textObject);
+      setSelectedObject(textObject);
+      setSelectedImageName('');
       setSelectedFont(String(textObject.get('fontFamily') || 'Bebas Neue'));
       setSelectedTextColor(String(textObject.get('fill') || '#ffffff'));
     };
@@ -169,15 +192,17 @@ export default function ProductDetail() {
 
     canvas.clear();
     canvas.backgroundColor = 'transparent';
-    canvas.clipPath = createPrintableClipPath();
+    canvas.clipPath = printAreaEnabled ? createPrintableClipPath() : undefined;
     setSelectedTextObject(null);
+    setSelectedObject(null);
+    setSelectedImageName('');
     const savedDesign = designsBySideRef.current[printingSide];
     if (savedDesign) {
       canvas.loadFromJSON(savedDesign, () => canvas.renderAll());
     } else {
       canvas.renderAll();
     }
-  }, [printingSide]);
+  }, [printingSide, printAreaEnabled]);
 
   const updateSelectedText = (property: 'fontFamily' | 'fill', value: string) => {
     const activeObject = fabricCanvasRef.current?.getActiveObject();
@@ -199,6 +224,50 @@ export default function ProductDetail() {
     canvas.discardActiveObject();
     canvas.renderAll();
     setSelectedTextObject(null);
+  };
+
+  const removeSelectedImage = () => {
+    const canvas = fabricCanvasRef.current;
+    const activeObject = canvas?.getActiveObject();
+    if (!canvas || !activeObject || activeObject.type !== 'image') return;
+
+    canvas.remove(activeObject);
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    setSelectedObject(null);
+    setSelectedImageName('');
+  };
+
+  const rotateSelectedObject = () => {
+    if (!selectedObject || !fabricCanvasRef.current) return;
+    selectedObject.rotate(((selectedObject.angle || 0) + 90) % 360);
+    fabricCanvasRef.current.renderAll();
+  };
+
+  const flipSelectedObject = () => {
+    if (!selectedObject || !fabricCanvasRef.current) return;
+    selectedObject.set('flipX', !selectedObject.flipX);
+    fabricCanvasRef.current.renderAll();
+  };
+
+  const duplicateSelectedObject = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!selectedObject || !canvas) return;
+
+    selectedObject.clone((clone: fabric.Object) => {
+      clone.set({
+        left: (selectedObject.left || 0) + 24,
+        top: (selectedObject.top || 0) + 24,
+      });
+      canvas.add(clone);
+      canvas.setActiveObject(clone);
+      canvas.renderAll();
+    }, ['fileName']);
+  };
+
+  const removeSelectedObject = () => {
+    if (selectedObject?.type === 'i-text') removeSelectedText();
+    if (selectedObject?.type === 'image') removeSelectedImage();
   };
 
   // Handle image upload
@@ -237,6 +306,7 @@ export default function ProductDetail() {
             cornerSize: 10,
             transparentCorners: false,
           });
+          (img as fabric.Image & { fileName?: string }).fileName = file.name;
 
           canvas.add(img);
           canvas.setActiveObject(img);
@@ -367,7 +437,7 @@ export default function ProductDetail() {
                   alt={product.name}
                   className="product-image"
                 />
-                <div className="printable-area" aria-hidden="true" />
+                {printAreaEnabled && <div className="printable-area" aria-hidden="true" />}
                 <div className="canvas-editor">
                   <canvas ref={canvasRef} className="design-canvas" />
                 </div>
@@ -386,9 +456,15 @@ export default function ProductDetail() {
               </button>
             </div>
 
-            {selectedTextObject && (
-              <div className="text-controls">
-                <label className="text-control">
+            {selectedObject && (
+              <div className="text-controls object-controls">
+                <span className="object-name">
+                  {selectedImageName || 'Your text'}
+                </span>
+                <button className="object-action-btn" type="button" onClick={rotateSelectedObject} title={t.rotate} aria-label={t.rotate}>↻</button>
+                <button className="object-action-btn" type="button" onClick={flipSelectedObject} title={t.flip} aria-label={t.flip}>⇋</button>
+                <button className="object-action-btn" type="button" onClick={duplicateSelectedObject} title={t.duplicate} aria-label={t.duplicate}>＋</button>
+                {selectedTextObject && <label className="text-control">
                   {t.font}
                   <select
                     className="font-select"
@@ -401,8 +477,8 @@ export default function ProductDetail() {
                       </option>
                     ))}
                   </select>
-                </label>
-                <label className="text-control">
+                </label>}
+                {selectedTextObject && <label className="text-control">
                   {t.textColor}
                   <input
                     className="text-color-input"
@@ -411,13 +487,13 @@ export default function ProductDetail() {
                     onChange={event => updateSelectedText('fill', event.target.value)}
                     aria-label={t.textColor}
                   />
-                </label>
+                </label>}
                 <button
                   className="remove-text-btn"
                   type="button"
-                  onClick={removeSelectedText}
-                  title={t.removeText}
-                  aria-label={t.removeText}
+                  onClick={removeSelectedObject}
+                  title={selectedTextObject ? t.removeText : t.removeImage}
+                  aria-label={selectedTextObject ? t.removeText : t.removeImage}
                 >
                   ×
                 </button>

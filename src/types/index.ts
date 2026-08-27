@@ -33,6 +33,8 @@ export interface ApiProduct {
   variants: ApiProductVariant[];
   createdAt: string;
   updatedAt: string;
+  productImages?: AdminProductImage[];
+  printAreas?: PrintAreaConfig[];
 }
 
 export interface ApiProductsResponse {
@@ -53,6 +55,24 @@ export interface ApiProductResponse {
   data: {
     product: ApiProduct;
   };
+}
+
+export interface AdminProductImage {
+  id: string;
+  color: string;
+  side: 'FRONT' | 'BACK';
+  url: string;
+  fileName?: string | null;
+  variants: { variantId: string; imageId: string }[];
+}
+
+export interface PrintAreaConfig {
+  side: 'FRONT' | 'BACK';
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  enabled: boolean;
 }
 
 // Frontend Display Types (for components)
@@ -118,6 +138,10 @@ export interface Translation {
   font: string;
   textColor: string;
   removeText: string;
+  removeImage: string;
+  rotate: string;
+  flip: string;
+  duplicate: string;
   printableArea: string;
   unitPrice: string;
   price: string;
