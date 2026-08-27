@@ -93,3 +93,7 @@ export const api = {
 };
 
 export { ApiError };
+export const getProductBySlug = async (slug: string) => {
+  const response = await api.getProductBySlug(slug);
+  return response.data.product;
+};

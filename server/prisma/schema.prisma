@@ -20,25 +20,28 @@ model Category {
 }
 
 model Product {
-  id          String           @id @default(uuid())
-  name        String
-  slug        String           @unique
-  description String?
-  price       Float
-  images      String[]
-  active      Boolean          @default(true)
-  featured    Boolean          @default(false)
-  categoryId  String
-  category    Category         @relation(fields: [categoryId], references: [id])
-  variants    ProductVariant[]
-  orderItems  OrderItem[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id                  String           @id @default(uuid())
+  name                String
+  slug                String           @unique
+  description         String?
+  price               Float
+  images              String[]
+  active              Boolean          @default(true)
+  featured            Boolean          @default(false)
+  type                ProductType      @default(OTHER)
+  supportsDoublePrint Boolean          @default(false)
+  categoryId          String
+  category            Category         @relation(fields: [categoryId], references: [id])
+  variants            ProductVariant[]
+  orderItems          OrderItem[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
   @@index([slug])
   @@index([categoryId])
   @@index([active])
   @@index([featured])
+  @@index([type])
 }
 
 model ProductVariant {
@@ -132,4 +135,14 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+}
+
+enum ProductType {
+  TSHIRT
+  HOODIE
+  POLO
+  JOGGER
+  TOTE_BAG
+  CAP
+  OTHER
 }

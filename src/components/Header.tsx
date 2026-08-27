@@ -1,7 +1,7 @@
 import { Logo } from './Logo';
 import { Navigation } from './Navigation';
 import { ThemeToggle } from './ThemeToggle';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import LanguageSwitcher from './LanguageSwitcher';
 import { CartButton } from './CartButton';
 
 export const Header = () => {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import type { Product } from '../types';
 
@@ -7,25 +7,11 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
-  const { t, language } = useLanguage();
-  const [showModal, setShowModal] = useState(false);
-
-  const handleCustomize = () => {
-    setShowModal(true);
-    setTimeout(() => {
-      setShowModal(false);
-      const message = language === 'fr'
-        ? `Personnalisation de: ${product.name}\n\nDans l'application réelle, ceci naviguerait vers:\n/custom/editor/${product.id}`
-        : language === 'ar'
-        ? `تخصيص: ${product.name}\n\nفي التطبيق الحقيقي، سيتم الانتقال إلى:\n/custom/editor/${product.id}`
-        : `Customizing: ${product.name}\n\nIn the real app, this would navigate to:\n/custom/editor/${product.id}`;
-      alert(message);
-    }, 1500);
-  };
+  const { t } = useLanguage();
 
   return (
-    <>
-      <div className="product-card">
+    <div className="product-card">
+      <Link to={`/custom/product/${product.slug}`} className="product-card-link">
         <div className="product-image-container">
           {product.badge && <span className="product-badge">{product.badge}</span>}
           <img src={product.image} alt={product.name} className="product-image" />
@@ -47,22 +33,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               )}
               <span className="product-price">{product.price} DZD</span>
             </div>
-            <button className="customize-btn" onClick={handleCustomize}>
+            <button className="customize-btn" onClick={(e) => e.preventDefault()}>
               {t.customizeBtn}
             </button>
           </div>
         </div>
-      </div>
-
-      {showModal && (
-        <div className="modal-overlay active">
-          <div className="modal-content">
-            <h3>{t.modalTitle}</h3>
-            <p>{t.modalText}</p>
-            <div className="spinner"></div>
-          </div>
-        </div>
-      )}
-    </>
+      </Link>
+    </div>
   );
 };

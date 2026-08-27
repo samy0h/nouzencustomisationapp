@@ -15,6 +15,8 @@ export interface ApiProductVariant {
   available: boolean;
 }
 
+export type ProductType = 'TSHIRT' | 'HOODIE' | 'POLO' | 'JOGGER' | 'TOTE_BAG' | 'CAP' | 'OTHER';
+
 export interface ApiProduct {
   id: string;
   name: string;
@@ -24,6 +26,8 @@ export interface ApiProduct {
   images: string[];
   active: boolean;
   featured: boolean;
+  type: ProductType;
+  supportsDoublePrint: boolean;
   categoryId: string;
   category: ApiCategory;
   variants: ApiProductVariant[];
@@ -97,8 +101,31 @@ export interface Translation {
   loading: string;
   error: string;
   retry: string;
+  // Product detail page
+  productColor: string;
+  productSize: string;
+  productQuantity: string;
+  productPrintingSide: string;
+  printingSideFront: string;
+  printingSideBack: string;
+  printingSideBoth: string;
+  backToCatalog: string;
+  selectColor: string;
+  selectSize: string;
+  // Customization workspace
+  addImage: string;
+  addText: string;
+  printableArea: string;
+  unitPrice: string;
+  price: string;
+  addToCart: string;
+  order: string;
+  customizedProduct: string;
+  chooseSize: string;
+  validateOrder: string;
 }
 
 export type Language = 'fr' | 'ar' | 'en';
 export type Theme = 'light' | 'dark';
 export type SortOption = 'featured' | 'price-low' | 'price-high';
+export type PrintingSide = 'FRONT' | 'BACK' | 'BOTH';

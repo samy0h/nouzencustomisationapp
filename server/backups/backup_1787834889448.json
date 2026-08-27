@@ -1,0 +1,531 @@
+{
+  "timestamp": "2026-08-27T12:48:09.446Z",
+  "categories": [
+    {
+      "id": "56550e95-44a1-4e25-aa03-bfe4a28d94b7",
+      "name": "Polo",
+      "slug": "polo",
+      "createdAt": "2026-08-27T02:46:03.032Z",
+      "updatedAt": "2026-08-27T02:46:03.032Z"
+    },
+    {
+      "id": "a6c2159c-3285-4b86-8003-a0472834dc4c",
+      "name": "Hoodie",
+      "slug": "hoodie",
+      "createdAt": "2026-08-27T02:46:03.032Z",
+      "updatedAt": "2026-08-27T02:46:03.032Z"
+    },
+    {
+      "id": "09d70bf6-8618-42d7-93b4-8edfd214680e",
+      "name": "T-Shirt",
+      "slug": "tshirt",
+      "createdAt": "2026-08-27T02:46:03.032Z",
+      "updatedAt": "2026-08-27T02:46:03.032Z"
+    },
+    {
+      "id": "aec0440d-978f-4a73-84b5-f4894d12daf4",
+      "name": "Cap",
+      "slug": "cap",
+      "createdAt": "2026-08-27T02:46:03.032Z",
+      "updatedAt": "2026-08-27T02:46:03.032Z"
+    },
+    {
+      "id": "03110955-c384-4a6b-883e-412f52d0e841",
+      "name": "Tote Bag",
+      "slug": "tote-bag",
+      "createdAt": "2026-08-27T02:46:03.032Z",
+      "updatedAt": "2026-08-27T02:46:03.032Z"
+    },
+    {
+      "id": "1d682bca-c594-4857-9e8a-c249cb9ac1f1",
+      "name": "T-Shirt Oversize",
+      "slug": "oversize",
+      "createdAt": "2026-08-27T02:46:03.032Z",
+      "updatedAt": "2026-08-27T02:46:03.032Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+      "name": "T-shirt standard",
+      "slug": "tshirt-standard",
+      "description": "Classic comfortable t-shirt perfect for customization",
+      "price": 2200,
+      "images": [
+        "https://placehold.co/400x500/ffffff/cccccc?text=T-shirt"
+      ],
+      "active": true,
+      "featured": true,
+      "categoryId": "09d70bf6-8618-42d7-93b4-8edfd214680e",
+      "createdAt": "2026-08-27T02:46:03.266Z",
+      "updatedAt": "2026-08-27T02:46:03.266Z",
+      "variants": [
+        {
+          "id": "fdc88d87-aaec-411e-b368-62655f3763e0",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Black",
+          "colorHex": "#000000",
+          "size": "S",
+          "priceOverride": null,
+          "stock": 50,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "e263b2bd-6595-47b9-9734-12b96fa6d149",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Black",
+          "colorHex": "#000000",
+          "size": "M",
+          "priceOverride": null,
+          "stock": 100,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "8d7968bf-f26e-44b6-87de-fb22dd0b274d",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Black",
+          "colorHex": "#000000",
+          "size": "L",
+          "priceOverride": null,
+          "stock": 80,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "cfd1fdbc-29e1-4798-b637-9559342c5068",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "S",
+          "priceOverride": null,
+          "stock": 60,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "cd4b04cb-53e8-45b8-a1c4-af953c75c813",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "M",
+          "priceOverride": null,
+          "stock": 120,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "284c78ec-d1f4-4966-a842-d3edae9cd48c",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "L",
+          "priceOverride": null,
+          "stock": 90,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "019ca545-6e7a-45ec-93c4-5cb9b55cc3c8",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Gray",
+          "colorHex": "#6B7280",
+          "size": "S",
+          "priceOverride": null,
+          "stock": 40,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "4155fe32-f286-4b85-8bfc-e8ad8e5e7ec3",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Gray",
+          "colorHex": "#6B7280",
+          "size": "M",
+          "priceOverride": null,
+          "stock": 70,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "9809c3b6-97af-4973-ba35-1b9bd7056acd",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Gray",
+          "colorHex": "#6B7280",
+          "size": "L",
+          "priceOverride": null,
+          "stock": 60,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "39b2a29c-2c32-4dba-b1f9-55e45aca0736",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Burgundy",
+          "colorHex": "#A00223",
+          "size": "S",
+          "priceOverride": null,
+          "stock": 30,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "a8399199-f55b-4a1d-b5da-b127b2af2bfc",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Burgundy",
+          "colorHex": "#A00223",
+          "size": "M",
+          "priceOverride": null,
+          "stock": 50,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        },
+        {
+          "id": "77663859-17d0-4401-8fd1-878aefe5668c",
+          "productId": "cdf84e28-4ca7-4222-b15c-92a8767d1022",
+          "color": "Burgundy",
+          "colorHex": "#A00223",
+          "size": "L",
+          "priceOverride": null,
+          "stock": 40,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.266Z",
+          "updatedAt": "2026-08-27T02:46:03.266Z"
+        }
+      ],
+      "category": {
+        "id": "09d70bf6-8618-42d7-93b4-8edfd214680e",
+        "name": "T-Shirt",
+        "slug": "tshirt",
+        "createdAt": "2026-08-27T02:46:03.032Z",
+        "updatedAt": "2026-08-27T02:46:03.032Z"
+      }
+    },
+    {
+      "id": "217693b2-a4eb-4ad6-bf3d-2adebb1a9a96",
+      "name": "Hoodie",
+      "slug": "hoodie",
+      "description": "Warm and cozy hoodie with customizable front and back",
+      "price": 3100,
+      "images": [
+        "https://placehold.co/400x500/ffffff/cccccc?text=Hoodie"
+      ],
+      "active": true,
+      "featured": true,
+      "categoryId": "a6c2159c-3285-4b86-8003-a0472834dc4c",
+      "createdAt": "2026-08-27T02:46:03.301Z",
+      "updatedAt": "2026-08-27T02:46:03.301Z",
+      "variants": [
+        {
+          "id": "674d8dfd-0d9a-4e0e-9d38-792f83d31c0c",
+          "productId": "217693b2-a4eb-4ad6-bf3d-2adebb1a9a96",
+          "color": "Black",
+          "colorHex": "#000000",
+          "size": "S",
+          "priceOverride": null,
+          "stock": 30,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.301Z",
+          "updatedAt": "2026-08-27T02:46:03.301Z"
+        },
+        {
+          "id": "8e263adf-dbdd-40df-a020-c05b892a17d8",
+          "productId": "217693b2-a4eb-4ad6-bf3d-2adebb1a9a96",
+          "color": "Black",
+          "colorHex": "#000000",
+          "size": "M",
+          "priceOverride": null,
+          "stock": 50,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.301Z",
+          "updatedAt": "2026-08-27T02:46:03.301Z"
+        },
+        {
+          "id": "30e970b1-94fc-42ac-854c-8d62686b4e79",
+          "productId": "217693b2-a4eb-4ad6-bf3d-2adebb1a9a96",
+          "color": "Black",
+          "colorHex": "#000000",
+          "size": "L",
+          "priceOverride": null,
+          "stock": 40,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.301Z",
+          "updatedAt": "2026-08-27T02:46:03.301Z"
+        },
+        {
+          "id": "aabc0a20-621a-4f4f-abd5-7f4456c1041d",
+          "productId": "217693b2-a4eb-4ad6-bf3d-2adebb1a9a96",
+          "color": "Black",
+          "colorHex": "#000000",
+          "size": "XL",
+          "priceOverride": null,
+          "stock": 35,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.301Z",
+          "updatedAt": "2026-08-27T02:46:03.301Z"
+        }
+      ],
+      "category": {
+        "id": "a6c2159c-3285-4b86-8003-a0472834dc4c",
+        "name": "Hoodie",
+        "slug": "hoodie",
+        "createdAt": "2026-08-27T02:46:03.032Z",
+        "updatedAt": "2026-08-27T02:46:03.032Z"
+      }
+    },
+    {
+      "id": "5429487b-73fd-4d8c-8a1a-c0b9b780ccb8",
+      "name": "Polo",
+      "slug": "polo",
+      "description": "Classic polo shirt for a smart casual look",
+      "price": 3000,
+      "images": [
+        "https://placehold.co/400x500/ffffff/cccccc?text=Polo"
+      ],
+      "active": true,
+      "featured": false,
+      "categoryId": "56550e95-44a1-4e25-aa03-bfe4a28d94b7",
+      "createdAt": "2026-08-27T02:46:03.308Z",
+      "updatedAt": "2026-08-27T02:46:03.308Z",
+      "variants": [
+        {
+          "id": "35331523-467a-419a-adc2-543e71088a3a",
+          "productId": "5429487b-73fd-4d8c-8a1a-c0b9b780ccb8",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "S",
+          "priceOverride": null,
+          "stock": 40,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.308Z",
+          "updatedAt": "2026-08-27T02:46:03.308Z"
+        },
+        {
+          "id": "0658a8b2-0dd7-4df7-867b-4596f1110aa3",
+          "productId": "5429487b-73fd-4d8c-8a1a-c0b9b780ccb8",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "M",
+          "priceOverride": null,
+          "stock": 60,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.308Z",
+          "updatedAt": "2026-08-27T02:46:03.308Z"
+        },
+        {
+          "id": "d1288cef-9a07-407a-945e-2671493cf4ee",
+          "productId": "5429487b-73fd-4d8c-8a1a-c0b9b780ccb8",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "L",
+          "priceOverride": null,
+          "stock": 50,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.308Z",
+          "updatedAt": "2026-08-27T02:46:03.308Z"
+        }
+      ],
+      "category": {
+        "id": "56550e95-44a1-4e25-aa03-bfe4a28d94b7",
+        "name": "Polo",
+        "slug": "polo",
+        "createdAt": "2026-08-27T02:46:03.032Z",
+        "updatedAt": "2026-08-27T02:46:03.032Z"
+      }
+    },
+    {
+      "id": "02ac704a-e665-4f0f-9656-339a3d11e7b2",
+      "name": "Tote bag",
+      "slug": "tote-bag",
+      "description": "Durable canvas tote bag perfect for custom prints",
+      "price": 1200,
+      "images": [
+        "https://placehold.co/400x500/f5f3f0/999999?text=Tote+bag"
+      ],
+      "active": true,
+      "featured": false,
+      "categoryId": "03110955-c384-4a6b-883e-412f52d0e841",
+      "createdAt": "2026-08-27T02:46:03.314Z",
+      "updatedAt": "2026-08-27T02:46:03.314Z",
+      "variants": [
+        {
+          "id": "3bb6c1c5-66b1-4923-8715-9274dd77c426",
+          "productId": "02ac704a-e665-4f0f-9656-339a3d11e7b2",
+          "color": "Natural",
+          "colorHex": "#F5F3F0",
+          "size": "One Size",
+          "priceOverride": null,
+          "stock": 100,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.314Z",
+          "updatedAt": "2026-08-27T02:46:03.314Z"
+        }
+      ],
+      "category": {
+        "id": "03110955-c384-4a6b-883e-412f52d0e841",
+        "name": "Tote Bag",
+        "slug": "tote-bag",
+        "createdAt": "2026-08-27T02:46:03.032Z",
+        "updatedAt": "2026-08-27T02:46:03.032Z"
+      }
+    },
+    {
+      "id": "23ea678a-6ced-4942-b2a7-086ed3a576e1",
+      "name": "T-shirt oversize",
+      "slug": "tshirt-oversize",
+      "description": "Trendy oversized t-shirt with maximum print area",
+      "price": 2700,
+      "images": [
+        "https://placehold.co/400x500/ffffff/cccccc?text=Oversize"
+      ],
+      "active": true,
+      "featured": true,
+      "categoryId": "1d682bca-c594-4857-9e8a-c249cb9ac1f1",
+      "createdAt": "2026-08-27T02:46:03.319Z",
+      "updatedAt": "2026-08-27T02:46:03.319Z",
+      "variants": [
+        {
+          "id": "281c11a9-a5c3-4d70-8118-ab48d34e6247",
+          "productId": "23ea678a-6ced-4942-b2a7-086ed3a576e1",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "S",
+          "priceOverride": null,
+          "stock": 35,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.319Z",
+          "updatedAt": "2026-08-27T02:46:03.319Z"
+        },
+        {
+          "id": "15096b63-a9c3-44bb-b174-a8bda78a7b83",
+          "productId": "23ea678a-6ced-4942-b2a7-086ed3a576e1",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "M",
+          "priceOverride": null,
+          "stock": 60,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.319Z",
+          "updatedAt": "2026-08-27T02:46:03.319Z"
+        },
+        {
+          "id": "95de69eb-e5ba-488d-8836-45faf37fbdfa",
+          "productId": "23ea678a-6ced-4942-b2a7-086ed3a576e1",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "L",
+          "priceOverride": null,
+          "stock": 50,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.319Z",
+          "updatedAt": "2026-08-27T02:46:03.319Z"
+        },
+        {
+          "id": "3479a255-9a10-490b-a314-40ce1558078e",
+          "productId": "23ea678a-6ced-4942-b2a7-086ed3a576e1",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "XL",
+          "priceOverride": null,
+          "stock": 40,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.319Z",
+          "updatedAt": "2026-08-27T02:46:03.319Z"
+        }
+      ],
+      "category": {
+        "id": "1d682bca-c594-4857-9e8a-c249cb9ac1f1",
+        "name": "T-Shirt Oversize",
+        "slug": "oversize",
+        "createdAt": "2026-08-27T02:46:03.032Z",
+        "updatedAt": "2026-08-27T02:46:03.032Z"
+      }
+    },
+    {
+      "id": "95a0efae-9b22-482b-bd93-0c3aaf5665cd",
+      "name": "Cap",
+      "slug": "cap",
+      "description": "Baseball cap with embroidery options",
+      "price": 1200,
+      "images": [
+        "https://placehold.co/400x500/f5f3f0/999999?text=Cap"
+      ],
+      "active": true,
+      "featured": false,
+      "categoryId": "aec0440d-978f-4a73-84b5-f4894d12daf4",
+      "createdAt": "2026-08-27T02:46:03.325Z",
+      "updatedAt": "2026-08-27T02:46:03.325Z",
+      "variants": [
+        {
+          "id": "ace028d6-20ef-45a9-a280-93e6208a0522",
+          "productId": "95a0efae-9b22-482b-bd93-0c3aaf5665cd",
+          "color": "White",
+          "colorHex": "#FFFFFF",
+          "size": "Adjustable",
+          "priceOverride": null,
+          "stock": 80,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.325Z",
+          "updatedAt": "2026-08-27T02:46:03.325Z"
+        },
+        {
+          "id": "01c26a1c-62c1-4893-bf84-33ddeae8e31c",
+          "productId": "95a0efae-9b22-482b-bd93-0c3aaf5665cd",
+          "color": "Black",
+          "colorHex": "#000000",
+          "size": "Adjustable",
+          "priceOverride": null,
+          "stock": 70,
+          "available": true,
+          "sku": null,
+          "createdAt": "2026-08-27T02:46:03.325Z",
+          "updatedAt": "2026-08-27T02:46:03.325Z"
+        }
+      ],
+      "category": {
+        "id": "aec0440d-978f-4a73-84b5-f4894d12daf4",
+        "name": "Cap",
+        "slug": "cap",
+        "createdAt": "2026-08-27T02:46:03.032Z",
+        "updatedAt": "2026-08-27T02:46:03.032Z"
+      }
+    }
+  ]
+}
