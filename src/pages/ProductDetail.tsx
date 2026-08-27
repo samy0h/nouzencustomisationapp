@@ -17,15 +17,52 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [printingSide, setPrintingSide] = useState<PrintingSide>('FRONT');
+  const [selectedTextObject, setSelectedTextObject] = useState<fabric.IText | null>(null);
+  const [selectedFont, setSelectedFont] = useState('Bebas Neue');
+  const [selectedTextColor, setSelectedTextColor] = useState('#ffffff');
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const designsBySideRef = useRef<Record<PrintingSide, object | null>>({
+    FRONT: null,
+    BACK: null,
+    BOTH: null,
+  });
 
   const printableBounds = {
-    left: 108,
-    top: 82,
-    width: 184,
-    height: 330,
+    left: 216,
+    top: 164,
+    width: 368,
+    height: 660,
+  };
+
+  const createPrintableClipPath = () => new fabric.Rect({
+    left: printableBounds.left + printableBounds.width / 2,
+    top: printableBounds.top + printableBounds.height / 2,
+    width: printableBounds.width,
+    height: printableBounds.height,
+    originX: 'center',
+    originY: 'center',
+    absolutePositioned: true,
+  });
+
+  const fontOptions = [
+    'Montserrat',
+    'Poppins',
+    'Oswald',
+    'Playfair Display',
+    'Bebas Neue',
+  ];
+
+  const saveCanvasForSide = (side: PrintingSide) => {
+    if (fabricCanvasRef.current) {
+      designsBySideRef.current[side] = fabricCanvasRef.current.toJSON();
+    }
+  };
+
+  const handleSideChange = (side: PrintingSide) => {
+    saveCanvasForSide(printingSide);
+    setPrintingSide(side);
   };
 
   // Get unique colors from variants
@@ -87,20 +124,82 @@ export default function ProductDetail() {
     if (!canvasRef.current || fabricCanvasRef.current) return;
 
     const canvas = new fabric.Canvas(canvasRef.current, {
-      width: 400,
-      height: 500,
+      width: 800,
+      height: 1000,
       backgroundColor: 'transparent',
       selection: true,
       preserveObjectStacking: true,
+      enableRetinaScaling: true,
+      clipPath: createPrintableClipPath(),
     });
 
     fabricCanvasRef.current = canvas;
 
+    const syncSelectedText = () => {
+      const activeObject = canvas.getActiveObject();
+      if (!activeObject || activeObject.type !== 'i-text') {
+        setSelectedTextObject(null);
+        return;
+      }
+
+      const textObject = activeObject as fabric.IText;
+      setSelectedTextObject(textObject);
+      setSelectedFont(String(textObject.get('fontFamily') || 'Bebas Neue'));
+      setSelectedTextColor(String(textObject.get('fill') || '#ffffff'));
+    };
+
+    canvas.on('selection:created', syncSelectedText);
+    canvas.on('selection:updated', syncSelectedText);
+    canvas.on('selection:cleared', syncSelectedText);
+
     return () => {
+      saveCanvasForSide(printingSide);
+      canvas.off('selection:created', syncSelectedText);
+      canvas.off('selection:updated', syncSelectedText);
+      canvas.off('selection:cleared', syncSelectedText);
       canvas.dispose();
       fabricCanvasRef.current = null;
     };
   }, [product]);
+
+  // Restore the independent design associated with the selected printing side.
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    canvas.clear();
+    canvas.backgroundColor = 'transparent';
+    canvas.clipPath = createPrintableClipPath();
+    setSelectedTextObject(null);
+    const savedDesign = designsBySideRef.current[printingSide];
+    if (savedDesign) {
+      canvas.loadFromJSON(savedDesign, () => canvas.renderAll());
+    } else {
+      canvas.renderAll();
+    }
+  }, [printingSide]);
+
+  const updateSelectedText = (property: 'fontFamily' | 'fill', value: string) => {
+    const activeObject = fabricCanvasRef.current?.getActiveObject();
+    if (!activeObject || activeObject.type !== 'i-text') return;
+
+    const textObject = activeObject as fabric.IText;
+    textObject.set(property, value);
+    fabricCanvasRef.current?.renderAll();
+    if (property === 'fontFamily') setSelectedFont(value);
+    if (property === 'fill') setSelectedTextColor(value);
+  };
+
+  const removeSelectedText = () => {
+    const canvas = fabricCanvasRef.current;
+    const activeObject = canvas?.getActiveObject();
+    if (!canvas || !activeObject || activeObject.type !== 'i-text') return;
+
+    canvas.remove(activeObject);
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    setSelectedTextObject(null);
+  };
 
   // Handle image upload
   const handleAddImage = () => {
@@ -161,9 +260,9 @@ export default function ProductDetail() {
       top: printableBounds.top + printableBounds.height / 2,
       originX: 'center',
       originY: 'center',
-      fontSize: 30,
-      fill: '#000000',
-      fontFamily: 'Montserrat',
+      fontSize: 60,
+      fill: '#ffffff',
+      fontFamily: 'Bebas Neue',
       cornerStyle: 'circle',
       cornerColor: 'white',
       cornerStrokeColor: '#A00223',
@@ -174,6 +273,9 @@ export default function ProductDetail() {
 
     canvas.add(text);
     canvas.setActiveObject(text);
+    setSelectedTextObject(text);
+    setSelectedFont('Bebas Neue');
+    setSelectedTextColor('#ffffff');
     canvas.renderAll();
   };
 
@@ -244,13 +346,13 @@ export default function ProductDetail() {
               <div className="side-switcher">
                 <button
                   className={`side-btn ${printingSide === 'FRONT' ? 'active' : ''}`}
-                  onClick={() => setPrintingSide('FRONT')}
+                  onClick={() => handleSideChange('FRONT')}
                 >
                   {t.printingSideFront}
                 </button>
                 <button
                   className={`side-btn ${printingSide === 'BACK' ? 'active' : ''}`}
-                  onClick={() => setPrintingSide('BACK')}
+                  onClick={() => handleSideChange('BACK')}
                 >
                   {t.printingSideBack}
                 </button>
@@ -283,6 +385,44 @@ export default function ProductDetail() {
                 <span>{t.addText}</span>
               </button>
             </div>
+
+            {selectedTextObject && (
+              <div className="text-controls">
+                <label className="text-control">
+                  {t.font}
+                  <select
+                    className="font-select"
+                    value={selectedFont}
+                    onChange={event => updateSelectedText('fontFamily', event.target.value)}
+                  >
+                    {fontOptions.map(font => (
+                      <option key={font} value={font} style={{ fontFamily: font }}>
+                        {font}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-control">
+                  {t.textColor}
+                  <input
+                    className="text-color-input"
+                    type="color"
+                    value={selectedTextColor}
+                    onChange={event => updateSelectedText('fill', event.target.value)}
+                    aria-label={t.textColor}
+                  />
+                </label>
+                <button
+                  className="remove-text-btn"
+                  type="button"
+                  onClick={removeSelectedText}
+                  title={t.removeText}
+                  aria-label={t.removeText}
+                >
+                  ×
+                </button>
+              </div>
+            )}
 
             <p className="editor-hint">Utilisez le canevas ci-dessus pour personnaliser votre produit</p>
           </div>

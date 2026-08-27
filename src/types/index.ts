@@ -115,6 +115,9 @@ export interface Translation {
   // Customization workspace
   addImage: string;
   addText: string;
+  font: string;
+  textColor: string;
+  removeText: string;
   printableArea: string;
   unitPrice: string;
   price: string;
