@@ -97,6 +97,28 @@ export const api = {
     method: 'PUT',
     body: JSON.stringify(payload),
   }),
+
+  addAdminProductVariantColor: async (id: string, payload: { color: string; colorHex: string; sizes: string[] }) => fetchApi(`/api/products/admin/${id}/variants/color`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+
+  deleteAdminProductImage: async (imageId: string) => fetchApi(`/api/products/admin/images/${imageId}`, {
+    method: 'DELETE',
+  }),
+
+  deleteAdminProductColor: async (id: string, color: string) => fetchApi(`/api/products/admin/${id}/variants/color/${encodeURIComponent(color)}`, {
+    method: 'DELETE',
+  }),
+
+  createAdminProduct: async (payload: unknown) => fetchApi('/api/products/admin', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+
+  deleteAdminProduct: async (id: string) => fetchApi(`/api/products/admin/${id}`, {
+    method: 'DELETE',
+  }),
 };
 
 export { ApiError };

@@ -167,3 +167,80 @@ export const saveAdminProductDesign = asyncHandler(async (req: Request, res: Res
 
   res.json({ status: 'success', message: 'Product design settings saved' });
 });
+
+export const addAdminProductVariantColor = asyncHandler(async (req: Request, res: Response) => {
+  const productId = String(req.params.id);
+  const { color, colorHex, sizes } = req.body as { color?: string; colorHex?: string; sizes?: string[] };
+  if (!color?.trim() || !/^#[0-9a-fA-F]{6}$/.test(colorHex || '') || !sizes?.length) {
+    throw new AppError('Color name, six-digit hex code, and at least one size are required', 400);
+  }
+  const validatedColorHex = colorHex as string;
+
+  const product = await prisma.product.findUnique({ where: { id: productId } });
+  if (!product) throw new AppError('Product not found', 404);
+
+  const existingColor = await prisma.productVariant.findFirst({
+    where: { productId, color: { equals: color.trim(), mode: 'insensitive' } },
+  });
+  if (existingColor) throw new AppError('A color with this name already exists', 409);
+
+  const variants = await prisma.$transaction(
+    sizes.map(size => prisma.productVariant.upsert({
+      where: { productId_color_size: { productId, color: color.trim(), size } },
+      update: { colorHex: validatedColorHex },
+      create: { productId, color: color.trim(), colorHex: validatedColorHex, size, stock: 0, available: true },
+    }))
+  );
+
+  res.status(201).json({ status: 'success', data: { variants } });
+});
+
+export const deleteAdminProductImage = asyncHandler(async (req: Request, res: Response) => {
+  const imageId = String(req.params.imageId);
+  await prisma.productImage.delete({ where: { id: imageId } });
+  res.json({ status: 'success', message: 'Product image deleted' });
+});
+
+export const deleteAdminProductColor = asyncHandler(async (req: Request, res: Response) => {
+  const productId = String(req.params.id);
+  const color = String(req.params.color);
+  const variants = await prisma.productVariant.findMany({ where: { productId } });
+  const matchingVariants = variants.filter(variant => variant.color.toLowerCase() === color.toLowerCase());
+
+  if (!matchingVariants.length) throw new AppError('Color not found', 404);
+  if (variants.length === matchingVariants.length) throw new AppError('At least one color must remain', 400);
+
+  await prisma.$transaction([
+    prisma.productImage.deleteMany({ where: { productId, color: { equals: matchingVariants[0].color, mode: 'insensitive' } } }),
+    prisma.productVariant.deleteMany({ where: { id: { in: matchingVariants.map(variant => variant.id) } } }),
+  ]);
+
+  res.json({ status: 'success', message: 'Color removed' });
+});
+
+export const createAdminProduct = asyncHandler(async (req: Request, res: Response) => {
+  const { name, slug, price, type = 'OTHER', categoryId, supportsDoublePrint = false, variants = [] } = req.body as {
+    name?: string; slug?: string; price?: number; type?: string; categoryId?: string;
+    supportsDoublePrint?: boolean; variants?: Array<{ color: string; colorHex: string; sizes: string[] }>;
+  };
+  if (!name?.trim() || !slug?.trim() || typeof price !== 'number' || price < 0 || !categoryId || !variants.length) {
+    throw new AppError('Name, slug, price, category, and at least one color are required', 400);
+  }
+
+  const product = await prisma.product.create({
+    data: {
+      name: name.trim(), slug: slug.trim().toLowerCase(), price, type: type as any,
+      categoryId, supportsDoublePrint,
+      images: [],
+      variants: { create: variants.flatMap(variant => variant.sizes.map(size => ({ color: variant.color, colorHex: variant.colorHex, size, stock: 0, available: true }))) },
+    },
+    include: { variants: true },
+  });
+  res.status(201).json({ status: 'success', data: { product } });
+});
+
+export const deleteAdminProduct = asyncHandler(async (req: Request, res: Response) => {
+  const product = await prisma.product.updateMany({ where: { id: String(req.params.id), active: true }, data: { active: false } });
+  if (!product.count) throw new AppError('Product not found', 404);
+  res.json({ status: 'success', message: 'Product archived' });
+});
