@@ -24,6 +24,7 @@ model Product {
   name                String
   slug                String           @unique
   description         String?
+  sizeChartImage      String?
   price               Float
   images              String[]
   active              Boolean          @default(true)

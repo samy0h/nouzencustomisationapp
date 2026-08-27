@@ -22,6 +22,7 @@ export interface ApiProduct {
   name: string;
   slug: string;
   description: string | null;
+  sizeChartImage?: string | null;
   price: number;
   images: string[];
   active: boolean;

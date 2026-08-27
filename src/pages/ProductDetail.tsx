@@ -514,6 +514,13 @@ export default function ProductDetail() {
             <p className="product-meta">
               {product.category.name} · {product.description?.substring(0, 30) || 'Détail'}
             </p>
+            {product.sizeChartImage && (
+              <img
+                className="size-chart-image"
+                src={product.sizeChartImage}
+                alt="Size dimensions"
+              />
+            )}
           </div>
 
           {/* Color Selector Card */}

@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Header } from '../components/Header';
 import { HeroBanner } from '../components/HeroBanner';
-import { PageHeader } from '../components/PageHeader';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryFilters } from '../components/CategoryFilters';
 import { SortDropdown } from '../components/SortDropdown';
@@ -118,8 +117,6 @@ export const Catalog = () => {
       <HeroBanner />
 
       <main className="main">
-        <PageHeader />
-
         <div className="filter-section">
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 

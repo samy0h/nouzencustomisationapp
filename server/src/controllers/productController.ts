@@ -219,8 +219,9 @@ export const deleteAdminProductColor = asyncHandler(async (req: Request, res: Re
 });
 
 export const createAdminProduct = asyncHandler(async (req: Request, res: Response) => {
-  const { name, slug, price, type = 'OTHER', categoryId, supportsDoublePrint = false, variants = [] } = req.body as {
+  const { name, slug, description, sizeChartImage, price, type = 'OTHER', categoryId, supportsDoublePrint = false, variants = [] } = req.body as {
     name?: string; slug?: string; price?: number; type?: string; categoryId?: string;
+    description?: string; sizeChartImage?: string;
     supportsDoublePrint?: boolean; variants?: Array<{ color: string; colorHex: string; sizes: string[] }>;
   };
   if (!name?.trim() || !slug?.trim() || typeof price !== 'number' || price < 0 || !categoryId || !variants.length) {
@@ -230,6 +231,8 @@ export const createAdminProduct = asyncHandler(async (req: Request, res: Respons
   const product = await prisma.product.create({
     data: {
       name: name.trim(), slug: slug.trim().toLowerCase(), price, type: type as any,
+      description: description?.trim() || null,
+      sizeChartImage: sizeChartImage || null,
       categoryId, supportsDoublePrint,
       images: [],
       variants: { create: variants.flatMap(variant => variant.sizes.map(size => ({ color: variant.color, colorHex: variant.colorHex, size, stock: 0, available: true }))) },
@@ -237,6 +240,31 @@ export const createAdminProduct = asyncHandler(async (req: Request, res: Respons
     include: { variants: true },
   });
   res.status(201).json({ status: 'success', data: { product } });
+});
+
+export const updateAdminProduct = asyncHandler(async (req: Request, res: Response) => {
+  const { name, slug, description, sizeChartImage, price, type, categoryId, supportsDoublePrint } = req.body as {
+    name?: string; slug?: string; description?: string | null; sizeChartImage?: string | null; price?: number; type?: string;
+    categoryId?: string; supportsDoublePrint?: boolean;
+  };
+  if (!name?.trim() || !slug?.trim() || typeof price !== 'number' || price < 0 || !categoryId) {
+    throw new AppError('Name, slug, price, and category are required', 400);
+  }
+
+  const product = await prisma.product.update({
+    where: { id: String(req.params.id) },
+    data: {
+      name: name.trim(),
+      slug: slug.trim().toLowerCase(),
+      description: description?.trim() || null,
+      sizeChartImage: sizeChartImage || null,
+      price,
+      type: type as any,
+      categoryId,
+      supportsDoublePrint: Boolean(supportsDoublePrint),
+    },
+  });
+  res.json({ status: 'success', data: { product } });
 });
 
 export const deleteAdminProduct = asyncHandler(async (req: Request, res: Response) => {

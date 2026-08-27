@@ -116,6 +116,11 @@ export const api = {
     body: JSON.stringify(payload),
   }),
 
+  updateAdminProduct: async (id: string, payload: unknown) => fetchApi(`/api/products/admin/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  }),
+
   deleteAdminProduct: async (id: string) => fetchApi(`/api/products/admin/${id}`, {
     method: 'DELETE',
   }),
