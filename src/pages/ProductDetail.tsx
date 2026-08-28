@@ -437,7 +437,18 @@ export default function ProductDetail() {
                   alt={product.name}
                   className="product-image"
                 />
-                {printAreaEnabled && <div className="printable-area" aria-hidden="true" />}
+                {printAreaEnabled && (
+                  <div
+                    className="printable-area"
+                    aria-hidden="true"
+                    style={{
+                      left: `${(configuredPrintArea?.x ?? 0.27) * 100}%`,
+                      top: `${(configuredPrintArea?.y ?? 0.165) * 100}%`,
+                      width: `${(configuredPrintArea?.width ?? 0.46) * 100}%`,
+                      height: `${(configuredPrintArea?.height ?? 0.66) * 100}%`,
+                    }}
+                  />
+                )}
                 <div className="canvas-editor">
                   <canvas ref={canvasRef} className="design-canvas" />
                 </div>

@@ -1,21 +1,21 @@
 import { useLanguage } from '../contexts/LanguageContext';
+import type { Product } from '../types';
 
 interface CategoryFiltersProps {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
+  products: Product[];
 }
 
-export const CategoryFilters = ({ activeCategory, onCategoryChange }: CategoryFiltersProps) => {
+export const CategoryFilters = ({ activeCategory, onCategoryChange, products }: CategoryFiltersProps) => {
   const { t } = useLanguage();
+
+  // Extract unique categories from products
+  const uniqueCategories = Array.from(new Set(products.map(p => p.category)));
 
   const categories = [
     { value: 'all', label: t.filterAll },
-    { value: 'Tshirt', label: t.filterTshirt },
-    { value: 'Hoodie', label: t.filterHoodie },
-    { value: 'Polo', label: t.filterPolo },
-    { value: 'Tote bag', label: t.filterTotebag },
-    { value: 'Tshirt oversize', label: t.filterOversize },
-    { value: 'Cap', label: t.filterCap },
+    ...uniqueCategories.map(cat => ({ value: cat, label: cat })),
   ];
 
   return (

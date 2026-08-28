@@ -219,10 +219,11 @@ export const deleteAdminProductColor = asyncHandler(async (req: Request, res: Re
 });
 
 export const createAdminProduct = asyncHandler(async (req: Request, res: Response) => {
-  const { name, slug, description, sizeChartImage, price, type = 'OTHER', categoryId, supportsDoublePrint = false, variants = [] } = req.body as {
+  const { name, slug, description, sizeChartImage, price, type = 'OTHER', categoryId, supportsDoublePrint = false, variants = [], images = [] } = req.body as {
     name?: string; slug?: string; price?: number; type?: string; categoryId?: string;
     description?: string; sizeChartImage?: string;
     supportsDoublePrint?: boolean; variants?: Array<{ color: string; colorHex: string; sizes: string[] }>;
+    images?: string[];
   };
   if (!name?.trim() || !slug?.trim() || typeof price !== 'number' || price < 0 || !categoryId || !variants.length) {
     throw new AppError('Name, slug, price, category, and at least one color are required', 400);
@@ -234,7 +235,7 @@ export const createAdminProduct = asyncHandler(async (req: Request, res: Respons
       description: description?.trim() || null,
       sizeChartImage: sizeChartImage || null,
       categoryId, supportsDoublePrint,
-      images: [],
+      images: images || [],
       variants: { create: variants.flatMap(variant => variant.sizes.map(size => ({ color: variant.color, colorHex: variant.colorHex, size, stock: 0, available: true }))) },
     },
     include: { variants: true },
@@ -243,9 +244,9 @@ export const createAdminProduct = asyncHandler(async (req: Request, res: Respons
 });
 
 export const updateAdminProduct = asyncHandler(async (req: Request, res: Response) => {
-  const { name, slug, description, sizeChartImage, price, type, categoryId, supportsDoublePrint } = req.body as {
+  const { name, slug, description, sizeChartImage, price, type, categoryId, supportsDoublePrint, images } = req.body as {
     name?: string; slug?: string; description?: string | null; sizeChartImage?: string | null; price?: number; type?: string;
-    categoryId?: string; supportsDoublePrint?: boolean;
+    categoryId?: string; supportsDoublePrint?: boolean; images?: string[];
   };
   if (!name?.trim() || !slug?.trim() || typeof price !== 'number' || price < 0 || !categoryId) {
     throw new AppError('Name, slug, price, and category are required', 400);
@@ -262,6 +263,7 @@ export const updateAdminProduct = asyncHandler(async (req: Request, res: Respons
       type: type as any,
       categoryId,
       supportsDoublePrint: Boolean(supportsDoublePrint),
+      ...(images !== undefined && { images }),
     },
   });
   res.json({ status: 'success', data: { product } });

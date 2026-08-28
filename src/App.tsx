@@ -6,6 +6,7 @@ import ProductDetail from './pages/ProductDetail';
 import Customizer from './pages/Customizer';
 import AdminProducts from './pages/AdminProducts';
 import AdminProductEditor from './pages/AdminProductEditor';
+import AdminSettings from './pages/AdminSettings';
 import './styles/catalog.css';
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
             <Route path="/custom/product/:slug" element={<ProductDetail />} />
             <Route path="/custom/product/:slug/customize" element={<Customizer />} />
             <Route path="/admin" element={<AdminProducts />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/products/new" element={<AdminProductEditor />} />
             <Route path="/admin/products/:id" element={<AdminProductEditor />} />
             <Route path="*" element={<Navigate to="/catalog" replace />} />
           </Routes>

@@ -124,6 +124,7 @@ export const Catalog = () => {
             <CategoryFilters
               activeCategory={activeCategory}
               onCategoryChange={setActiveCategory}
+              products={products}
             />
             <SortDropdown value={sortOption} onChange={setSortOption} />
           </div>

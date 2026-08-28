@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, PointerEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../services/api";
 import { getProductImage } from "../utils/imageHelpers";
 import type { AdminProductImage, ApiProduct, PrintAreaConfig } from "../types";
@@ -33,7 +33,9 @@ const baseColors = [
 ];
 
 export default function AdminProductEditor() {
-  const { id = "" } = useParams();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isNewProduct = !id;
   const [product, setProduct] = useState<
     | (ApiProduct & {
         productImages: AdminProductImage[];
@@ -41,7 +43,28 @@ export default function AdminProductEditor() {
       })
     | null
   >(null);
+  const [productName, setProductName] = useState("");
+  const [productSlug, setProductSlug] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productType, setProductType] = useState("OTHER");
+  const [productCategoryId, setProductCategoryId] = useState("");
+  const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
+  const [productTypes, setProductTypes] = useState<Array<{ id: string; name: string }>>([]);
+  const [coverPhoto, setCoverPhoto] = useState("");
   const [color, setColor] = useState("");
+
+  // Auto-generate slug from product name
+  const handleNameChange = (name: string) => {
+    setProductName(name);
+    // Auto-generate slug: lowercase, replace spaces with hyphens, remove special chars
+    const autoSlug = name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+    setProductSlug(autoSlug);
+  };
   const [side, setSide] = useState<Side>("FRONT");
   const [description, setDescription] = useState("");
   const [sizeChartImage, setSizeChartImage] = useState("");
@@ -68,12 +91,38 @@ export default function AdminProductEditor() {
     area: Area;
   } | null>(null);
 
+  const loadCategories = () =>
+    api.getProducts({ limit: 100, active: true })
+      .then((response) => {
+        const uniqueCategories = [...new Map(
+          response.data.products.map(p => [p.category.id, p.category])
+        ).values()];
+        setCategories(uniqueCategories);
+      })
+      .catch(() => setMessage("Could not load categories."));
+
+  const loadProductTypes = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/product-types');
+      const data = await response.json();
+      setProductTypes(data.data.productTypes);
+    } catch (err) {
+      setMessage("Could not load product types.");
+    }
+  };
+
   const loadProduct = () =>
-    api.getAdminProduct(id).then((response) => {
+    api.getAdminProduct(id!).then((response) => {
       const loaded = response.data.product;
       setProduct(loaded);
+      setProductName(loaded.name);
+      setProductSlug(loaded.slug);
+      setProductPrice(String(loaded.price));
+      setProductType(loaded.type);
+      setProductCategoryId(loaded.categoryId);
       setDescription(loaded.description || "");
       setSizeChartImage(loaded.sizeChartImage || "");
+      setCoverPhoto(loaded.images?.[0] || "");
       setColor((previous) => previous || loaded.variants[0]?.color || "");
       setAreas({
         FRONT:
@@ -83,8 +132,16 @@ export default function AdminProductEditor() {
           loaded.printAreas.find((area) => area.side === "BACK") || defaultArea,
       });
     });
+
   useEffect(() => {
-    loadProduct().catch(() => setMessage("Could not load this product."));
+    loadCategories();
+    loadProductTypes();
+    if (isNewProduct) {
+      setNewColorSizes(["S"]);
+      setColor(newColor || "Black");
+    } else {
+      loadProduct().catch(() => setMessage("Could not load this product."));
+    }
   }, [id]);
 
   const colors = useMemo(
@@ -99,8 +156,13 @@ export default function AdminProductEditor() {
   const variantsForColor =
     product?.variants.filter((variant) => variant.color === color) || [];
   const allSizes = useMemo(
-    () => [...new Set(product?.variants.map((variant) => variant.size) || [])],
-    [product],
+    () => {
+      if (isNewProduct) {
+        return ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'One Size'];
+      }
+      return [...new Set(product?.variants.map((variant) => variant.size) || [])];
+    },
+    [product, isNewProduct],
   );
 
   useEffect(() => {
@@ -171,6 +233,54 @@ export default function AdminProductEditor() {
         ? previous.filter((id) => id !== variantId)
         : [...previous, variantId],
     );
+  const createProduct = async () => {
+    if (!productName || !productSlug || !productPrice || !productCategoryId || !newColor || !newColorSizes.length) {
+      setMessage('Complete all product details and choose at least one size for the first color.');
+      return;
+    }
+    try {
+      const response = await api.createAdminProduct({
+        name: productName,
+        slug: productSlug,
+        description,
+        price: Number(productPrice),
+        categoryId: productCategoryId,
+        type: productType,
+        images: coverPhoto ? [coverPhoto] : [],
+        variants: [{ color: newColor, colorHex: newColorHex, sizes: newColorSizes }]
+      });
+      const createdProductId = response.data.product.id;
+
+      // Save images and print areas if configured
+      const images = [];
+      for (const [key, draft] of Object.entries(draftImagesRef.current)) {
+        const [draftColor, draftSide] = key.split(':');
+        images.push({
+          color: draftColor,
+          side: draftSide as Side,
+          url: draft.url,
+          fileName: draft.fileName,
+          variantIds: [], // Will be assigned by backend to all variants of this color
+        });
+      }
+
+      if (images.length > 0 || areas.FRONT.enabled || areas.BACK.enabled) {
+        await api.saveAdminProductDesign(createdProductId, {
+          images,
+          printAreas: (["FRONT", "BACK"] as Side[]).map((currentSide) => ({
+            side: currentSide,
+            ...areas[currentSide],
+          })),
+        });
+      }
+
+      navigate(`/admin/products/${createdProductId}`);
+      setMessage('Product created successfully.');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not create product.');
+    }
+  };
+
   const save = async () => {
     if (!product || !color) return;
     const images = product.productImages
@@ -185,14 +295,15 @@ export default function AdminProductEditor() {
     if (imageUrl)
       images.push({ color, side, url: imageUrl, fileName, variantIds });
     await api.updateAdminProduct(product.id, {
-      name: product.name,
-      slug: product.slug,
+      name: productName,
+      slug: productSlug,
       description,
       sizeChartImage,
-      price: product.price,
-      type: product.type,
-      categoryId: product.categoryId,
+      price: Number(productPrice),
+      type: productType,
+      categoryId: productCategoryId,
       supportsDoublePrint: product.supportsDoublePrint,
+      images: coverPhoto ? [coverPhoto] : [],
     });
     await api.saveAdminProductDesign(product.id, {
       images,
@@ -273,11 +384,275 @@ export default function AdminProductEditor() {
     }
   };
 
-  if (!product)
+  if (isNewProduct || !product)
     return (
       <main className="admin-page">
-        <div className="admin-shell">
-          <p>Loading product editor...</p>
+        <div className="admin-shell admin-editor-shell">
+          <Link to="/admin" className="admin-back">
+            ← All products
+          </Link>
+          <header className="admin-header">
+            <div>
+              <span className="admin-eyebrow">CREATE NEW PRODUCT</span>
+              <h1>Set up your product</h1>
+              <p>
+                Define product details, upload mockups, and configure print areas.
+              </p>
+            </div>
+            <button className="admin-save" onClick={createProduct}>
+              Create product
+            </button>
+          </header>
+          {message && <p className="admin-message">{message}</p>}
+          <div className="admin-editor-grid">
+            <section className="admin-panel admin-product-details-panel">
+              <h2>Product information</h2>
+              <label>
+                Product name
+                <input
+                  value={productName}
+                  onChange={(event) => handleNameChange(event.target.value)}
+                  placeholder="Classic hoodie"
+                />
+              </label>
+              <label>
+                URL slug (auto-generated)
+                <input
+                  value={productSlug}
+                  onChange={(event) => setProductSlug(event.target.value)}
+                  placeholder="classic-hoodie"
+                />
+              </label>
+              <label className="admin-description-field">
+                Description
+                <textarea
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  placeholder="Describe this product"
+                  rows={5}
+                />
+              </label>
+              <label>
+                Price
+                <input
+                  type="number"
+                  min="0"
+                  value={productPrice}
+                  onChange={(event) => setProductPrice(event.target.value)}
+                  placeholder="2500"
+                />
+              </label>
+              <label>
+                Category
+                <select
+                  value={productCategoryId}
+                  onChange={(event) => setProductCategoryId(event.target.value)}
+                >
+                  <option value="">Choose category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Type
+                <select
+                  value={productType}
+                  onChange={(event) => setProductType(event.target.value)}
+                >
+                  <option value="">Choose type</option>
+                  {productTypes.map((type) => (
+                    <option key={type.id} value={type.name}>
+                      {type.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="admin-description-field">
+                Cover photo (catalog thumbnail)
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => setCoverPhoto(String(reader.result));
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                {coverPhoto && <img className="admin-size-chart-preview" src={coverPhoto} alt="Cover photo preview" />}
+              </label>
+              <label className="admin-description-field">
+                Size dimensions image
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => setSizeChartImage(String(reader.result));
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                {sizeChartImage && <img className="admin-size-chart-preview" src={sizeChartImage} alt="Size dimensions preview" />}
+              </label>
+            </section>
+            <section className="admin-panel">
+              <h2>1. First color & mockup</h2>
+              <div className="admin-fields">
+                <div className="base-color-list">
+                  {baseColors.map(([name, hex]) => (
+                    <button
+                      type="button"
+                      key={name}
+                      style={{ backgroundColor: hex }}
+                      title={name}
+                      aria-label={name}
+                      onClick={() => {
+                        setNewColor(name);
+                        setNewColorHex(hex);
+                        setColor(name);
+                        setSelectedBaseHex(hex);
+                      }}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+                <div className="admin-color-fields">
+                  <input
+                    placeholder="Color name"
+                    value={newColor}
+                    onChange={(event) => {
+                      setNewColor(event.target.value);
+                      setColor(event.target.value);
+                      setSelectedBaseHex(null);
+                    }}
+                  />
+                  <input
+                    type="color"
+                    value={newColorHex}
+                    onChange={(event) => {
+                      setNewColorHex(event.target.value);
+                      if (
+                        selectedBaseHex &&
+                        selectedBaseHex.toLowerCase() !== event.target.value.toLowerCase()
+                      ) {
+                        setNewColor("");
+                        setColor("");
+                        setSelectedBaseHex(null);
+                      }
+                    }}
+                  />
+                </div>
+                <h3>Sizes</h3>
+                <div className="variant-checks">
+                  {allSizes.map((size) => (
+                    <label key={size}>
+                      <input
+                        type="checkbox"
+                        checked={newColorSizes.includes(size)}
+                        onChange={() =>
+                          setNewColorSizes((previous) =>
+                            previous.includes(size)
+                              ? previous.filter((value) => value !== size)
+                              : [...previous, size],
+                          )
+                        }
+                      />
+                      {size}
+                    </label>
+                  ))}
+                </div>
+                <div className="admin-segmented">
+                  <span>Side</span>
+                  <button
+                    className={side === "FRONT" ? "selected" : ""}
+                    onClick={() => setSide("FRONT")}
+                  >
+                    Front
+                  </button>
+                  <button
+                    className={side === "BACK" ? "selected" : ""}
+                    onClick={() => setSide("BACK")}
+                  >
+                    Back
+                  </button>
+                </div>
+                <label className="admin-upload">
+                  Upload mockup
+                  <input type="file" accept="image/*" onChange={handleUpload} />
+                </label>
+                {fileName && <p className="admin-file">{fileName}</p>}
+                {hasDraftImage && (
+                  <button
+                    type="button"
+                    className="admin-danger"
+                    onClick={deleteCurrentImage}
+                  >
+                    Delete this mockup
+                  </button>
+                )}
+              </div>
+            </section>
+            <section className="admin-panel">
+              <h2>2. Printable area</h2>
+              <p className="admin-help">
+                Drag the red box to move it. Drag the corner to resize it. Turn it
+                off to remove printing for this side.
+              </p>
+              <div ref={stageRef} className="admin-stage">
+                {imageUrl ? (
+                  <img src={imageUrl} alt="Selected mockup" />
+                ) : (
+                  <div className="admin-stage-placeholder">
+                    <p>Upload a mockup image to configure the print area</p>
+                  </div>
+                )}
+                {currentArea.enabled && imageUrl && (
+                  <div
+                    className="admin-print-area"
+                    style={{
+                      left: `${currentArea.x * 100}%`,
+                      top: `${currentArea.y * 100}%`,
+                      width: `${currentArea.width * 100}%`,
+                      height: `${currentArea.height * 100}%`,
+                    }}
+                    onPointerDown={(event) => startAreaDrag("move", event)}
+                    onPointerMove={updateAreaFromPointer}
+                    onPointerUp={stopAreaDrag}
+                  >
+                    <button
+                      type="button"
+                      onPointerDown={(event) => {
+                        event.stopPropagation();
+                        startAreaDrag("resize", event);
+                      }}
+                    >
+                      ↘
+                    </button>
+                  </div>
+                )}
+              </div>
+              <label className="admin-toggle">
+                <input
+                  type="checkbox"
+                  checked={currentArea.enabled}
+                  onChange={(event) =>
+                    setAreas((previous) => ({
+                      ...previous,
+                      [side]: { ...currentArea, enabled: event.target.checked },
+                    }))
+                  }
+                />{" "}
+                Printing area enabled
+              </label>
+            </section>
+          </div>
         </div>
       </main>
     );
@@ -290,7 +665,7 @@ export default function AdminProductEditor() {
         <header className="admin-header">
           <div>
             <span className="admin-eyebrow">
-              EDITING {product.name.toUpperCase()}
+              EDITING {productName.toUpperCase()}
             </span>
             <h1>Set up your product</h1>
             <p>
@@ -305,7 +680,23 @@ export default function AdminProductEditor() {
         {message && <p className="admin-message">{message}</p>}
         <div className="admin-editor-grid">
           <section className="admin-panel admin-product-details-panel">
-            <h2>Product details</h2>
+            <h2>Product information</h2>
+            <label>
+              Product name
+              <input
+                value={productName}
+                onChange={(event) => handleNameChange(event.target.value)}
+                placeholder="Classic hoodie"
+              />
+            </label>
+            <label>
+              URL slug (auto-generated)
+              <input
+                value={productSlug}
+                onChange={(event) => setProductSlug(event.target.value)}
+                placeholder="classic-hoodie"
+              />
+            </label>
             <label className="admin-description-field">
               Description
               <textarea
@@ -314,6 +705,59 @@ export default function AdminProductEditor() {
                 placeholder="Describe this product"
                 rows={5}
               />
+            </label>
+            <label>
+              Price
+              <input
+                type="number"
+                min="0"
+                value={productPrice}
+                onChange={(event) => setProductPrice(event.target.value)}
+                placeholder="2500"
+              />
+            </label>
+            <label>
+              Category
+              <select
+                value={productCategoryId}
+                onChange={(event) => setProductCategoryId(event.target.value)}
+              >
+                <option value="">Choose category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Type
+              <select
+                value={productType}
+                onChange={(event) => setProductType(event.target.value)}
+              >
+                <option value="">Choose type</option>
+                {productTypes.map((type) => (
+                  <option key={type.id} value={type.name}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="admin-description-field">
+              Cover photo (catalog thumbnail)
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = () => setCoverPhoto(String(reader.result));
+                  reader.readAsDataURL(file);
+                }}
+              />
+              {coverPhoto && <img className="admin-size-chart-preview" src={coverPhoto} alt="Cover photo preview" />}
             </label>
             <label className="admin-description-field">
               Size dimensions image

@@ -19,6 +19,15 @@ model Category {
   products  Product[]
 }
 
+model ProductType {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
 model Product {
   id                  String           @id @default(uuid())
   name                String
@@ -29,10 +38,12 @@ model Product {
   images              String[]
   active              Boolean          @default(true)
   featured            Boolean          @default(false)
-  type                ProductType      @default(OTHER)
+  type                String           @default("OTHER")
   supportsDoublePrint Boolean          @default(false)
   categoryId          String
   category            Category         @relation(fields: [categoryId], references: [id])
+  typeId              String?
+  productType         ProductType?     @relation(fields: [typeId], references: [id])
   variants            ProductVariant[]
   productImages       ProductImage[]
   printAreas          PrintArea[]
@@ -42,6 +53,7 @@ model Product {
 
   @@index([slug])
   @@index([categoryId])
+  @@index([typeId])
   @@index([active])
   @@index([featured])
   @@index([type])
@@ -185,14 +197,4 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
-}
-
-enum ProductType {
-  TSHIRT
-  HOODIE
-  POLO
-  JOGGER
-  TOTE_BAG
-  CAP
-  OTHER
 }

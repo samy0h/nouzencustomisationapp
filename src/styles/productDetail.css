@@ -203,12 +203,8 @@
 .printable-area {
   position: absolute;
   z-index: 3;
-  top: 16.5%;
-  left: 27%;
-  width: 46%;
-  height: 66%;
-  border: 2px dashed rgba(220, 91, 87, 0.9);
-  border-radius: 10px;
+  border: 2px dashed rgba(160, 2, 35, 0.8);
+  border-radius: 8px;
   pointer-events: none;
 }
 
