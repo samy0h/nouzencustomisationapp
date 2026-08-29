@@ -42,6 +42,28 @@
   font-size: 1rem;
 }
 
+.product-cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-inline-start: auto;
+  margin-inline-end: 1rem;
+  color: var(--crimson);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.inline-order-section {
+  max-width: 1180px;
+  margin: 2rem auto 8rem;
+  padding: 0 1.5rem;
+  scroll-margin-top: 1rem;
+}
+
+.inline-order-section .order-form-section {
+  background: transparent;
+}
+
 /* Language Switcher */
 .language-switcher {
   display: flex;
@@ -478,13 +500,15 @@
 }
 
 /* Size Grid */
-.size-grid {
+.size-grid,
+.fit-grid {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.size-btn {
+.size-btn,
+.fit-btn {
   min-width: 44px;
   padding: 0.5rem 0.875rem;
   border: 1.5px solid var(--border-color);
@@ -497,25 +521,41 @@
   transition: all 0.15s;
 }
 
-.size-btn:hover {
+.size-btn:hover,
+.fit-btn:hover {
   border-color: var(--crimson);
   background: rgba(160, 2, 35, 0.03);
 }
 
-.size-btn.selected {
+.size-btn.selected,
+.fit-btn.selected {
   border-color: var(--crimson);
   background: var(--crimson);
   color: white;
 }
 
-[data-theme="dark"] .size-btn {
+[data-theme="dark"] .size-btn,
+[data-theme="dark"] .fit-btn {
   background: var(--bg-secondary);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-[data-theme="dark"] .size-btn.selected {
+[data-theme="dark"] .size-btn.selected,
+[data-theme="dark"] .fit-btn.selected {
   background: var(--crimson);
   border-color: var(--crimson);
+}
+
+.cart-feedback {
+  margin: 0;
+  border: 1px solid rgba(160, 2, 35, 0.22);
+  border-radius: 8px;
+  background: rgba(160, 2, 35, 0.06);
+  color: var(--crimson);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 0.75rem 0.875rem;
 }
 
 /* Price Card */
@@ -605,10 +645,17 @@
 .action-bar-buttons {
   display: flex;
   gap: 0.625rem;
+  flex: 1;
+  justify-content: flex-end;
+  max-width: 920px;
 }
 
 .btn-add-cart,
 .btn-order-now {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   padding: 0.75rem 1.75rem;
   border: none;
   font-weight: 600;
@@ -621,8 +668,9 @@
 
 .btn-add-cart {
   background: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 1.5px solid var(--border-color);
+  color: var(--crimson);
+  border: 1.5px solid var(--crimson);
+  flex: 0 1 26%;
 }
 
 .btn-add-cart:hover:not(:disabled) {
@@ -634,6 +682,9 @@
 .btn-order-now {
   background: var(--crimson);
   color: white;
+  flex: 1 1 74%;
+  min-height: 50px;
+  font-size: 1rem;
 }
 
 .btn-order-now:hover:not(:disabled) {
@@ -775,8 +826,15 @@
 
   .btn-add-cart,
   .btn-order-now {
-    flex: 1;
     padding: 0.875rem;
+  }
+
+  .btn-order-now {
+    flex-basis: 70%;
+  }
+
+  .btn-add-cart {
+    flex-basis: 30%;
   }
 
   .action-bar-price {

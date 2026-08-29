@@ -1,0 +1,41 @@
+{
+  "printAreas": [
+    {
+      "side": "FRONT",
+      "enabled": true,
+      "y": 0.165,
+      "height": 0.66,
+      "x": 0.27,
+      "width": 0.46
+    }
+  ],
+  "productSlug": "tshirt-standard",
+  "designsBySide": {
+    "BACK": null,
+    "FRONT": {
+      "version": "5.3.0",
+      "objects": [
+        {
+          "cornerColor": "white",
+          "fontFamily": "Bebas Neue",
+          "borderColor": "#A00223",
+          "fill": "#ffffff",
+          "transparentCorners": false,
+          "type": "i-text",
+          "cornerStyle": "circle",
+          "originX": "center",
+          "name": "Your text",
+          "fontSize": 60,
+          "cornerSize": 10,
+          "top": 100,
+          "text": "Hello",
+          "left": 100,
+          "cornerStrokeColor": "#A00223",
+          "originY": "center"
+        }
+      ]
+    },
+    "BOTH": null
+  },
+  "printingSide": "FRONT"
+}

@@ -1,0 +1,31 @@
+{
+  "printAreas": [
+    {
+      "side": "FRONT",
+      "enabled": true,
+      "y": 0.165,
+      "height": 0.66,
+      "x": 0.27,
+      "width": 0.46
+    }
+  ],
+  "productSlug": "tshirt-standard",
+  "designsBySide": {
+    "BACK": null,
+    "FRONT": {
+      "objects": [
+        {
+          "fill": "#ffffff",
+          "text": "Hello",
+          "top": 100,
+          "type": "i-text",
+          "left": 100,
+          "fontFamily": "Bebas Neue",
+          "fontSize": 60
+        }
+      ]
+    },
+    "BOTH": null
+  },
+  "printingSide": "FRONT"
+}

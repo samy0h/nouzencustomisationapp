@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 
 export class AppError extends Error {
   statusCode: number;
@@ -26,7 +27,14 @@ export const errorHandler = (
     });
   }
 
-  // Log unexpected errors
+  if (err instanceof z.ZodError) {
+    const message = err.issues.map(issue => issue.message).join(', ');
+    return res.status(400).json({
+      status: 'error',
+      message: message || 'Validation failed',
+    });
+  }
+
   console.error('❌ Unexpected error:', err);
 
   return res.status(500).json({

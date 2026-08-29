@@ -127,38 +127,56 @@ model PrintArea {
 }
 
 model Order {
-  id              String      @id @default(uuid())
-  orderNumber     String      @unique
-  customerName    String
-  customerEmail   String
-  customerPhone   String?
-  shippingAddress String
-  status          OrderStatus @default(PENDING)
-  total           Float
-  items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id                 String      @id @default(uuid())
+  orderNumber        String      @unique
+  customerName       String
+  phone              String
+  wilaya             String
+  baladia            String
+  address            String
+  deliveryType       DeliveryType @default(A_DOMICILE)
+  subtotal           Float
+  deliveryCost       Float
+  total              Float
+  paymentMethod      String      @default("COD")
+  status             OrderStatus @default(PENDING)
+  confirmedAt        DateTime?
+  processingAt       DateTime?
+  shippedAt          DateTime?
+  deliveredAt        DateTime?
+  cancelledAt        DateTime?
+  cancellationReason String?
+  items              OrderItem[]
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
 
   @@index([orderNumber])
   @@index([status])
   @@index([createdAt])
+  @@index([wilaya])
 }
 
 model OrderItem {
-  id                 String          @id @default(uuid())
-  orderId            String
-  order              Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId          String
-  product            Product         @relation(fields: [productId], references: [id])
-  variantId          String?
-  variant            ProductVariant? @relation(fields: [variantId], references: [id])
-  productName        String // Preserved at time of order
-  variantColor       String? // Preserved at time of order
-  variantSize        String? // Preserved at time of order
-  quantity           Int
-  price              Float // Price at time of order
-  customizationData  Json? // Store design/customization details
-  createdAt          DateTime        @default(now())
+  id                  String          @id @default(uuid())
+  orderId             String
+  order               Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId           String
+  product             Product         @relation(fields: [productId], references: [id])
+  variantId           String?
+  variant             ProductVariant? @relation(fields: [variantId], references: [id])
+  productNameSnapshot String
+  unitPriceSnapshot   Float
+  quantity            Int
+  color               String?
+  size                String?
+  fit                 String?
+  customizationData   Json?
+  mockupFrontUrl      String?
+  mockupBackUrl       String?
+  designFrontUrl      String?
+  designBackUrl       String?
+  customizationJsonUrl String?
+  createdAt           DateTime        @default(now())
 
   @@index([orderId])
   @@index([productId])
@@ -197,4 +215,9 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+}
+
+enum DeliveryType {
+  A_DOMICILE
+  STOP_DESK
 }

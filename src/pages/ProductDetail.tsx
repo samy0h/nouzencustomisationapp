@@ -1,17 +1,20 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useProduct } from '../hooks/useProduct';
+import { cartStore, useCart } from '../stores/cartStore';
 import { getProductImage } from '../utils/imageHelpers';
 import { fabric } from 'fabric';
+import { ShoppingBasket, ShoppingCart } from 'lucide-react';
 import type { PrintingSide } from '../types';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import OrderForm from '../components/OrderForm';
 import '../styles/productDetail.css';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const navigate = useNavigate();
   const { t, language } = useLanguage();
+  const { itemCount } = useCart();
   const { product, loading, error, retry } = useProduct(slug || '');
 
   const [selectedColor, setSelectedColor] = useState<string>('');
@@ -22,8 +25,11 @@ export default function ProductDetail() {
   const [selectedImageName, setSelectedImageName] = useState('');
   const [selectedFont, setSelectedFont] = useState('Bebas Neue');
   const [selectedTextColor, setSelectedTextColor] = useState('#ffffff');
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [cartMessage, setCartMessage] = useState('');
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const orderSectionRef = useRef<HTMLElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const designsBySideRef = useRef<Record<PrintingSide, object | null>>({
     FRONT: null,
@@ -349,21 +355,65 @@ export default function ProductDetail() {
     canvas.renderAll();
   };
 
-  const handleCustomize = () => {
-    if (!selectedVariant) return;
+  const serializeCartItem = () => {
+    if (!product || !selectedVariant || !slug) return null;
 
-    navigate(`/custom/product/${slug}/customize`, {
-      state: {
-        productId: product?.id,
-        productSlug: slug,
-        variantId: selectedVariant.id,
-        color: selectedColor,
-        size: selectedSize,
-        printingSide: product?.supportsDoublePrint ? printingSide : null,
-        price: product?.price,
-        productName: product?.name,
-      },
+    saveCanvasForSide(printingSide);
+    const hasDesign = Object.values(designsBySideRef.current).some(design => {
+      const objects = (design as { objects?: unknown[] } | null)?.objects;
+      return Boolean(objects?.length);
     });
+
+    if (!hasDesign) {
+      setCartMessage('Add a text or image before adding this customized item.');
+      return null;
+    }
+
+    const activeDesignDataUrl = fabricCanvasRef.current?.toDataURL({ format: 'png', multiplier: 1 }) ?? null;
+    const isBack = printingSide === 'BACK';
+    const customizationData = {
+      productSlug: slug,
+      printingSide,
+      printAreas: product.printAreas ?? [],
+      designsBySide: designsBySideRef.current,
+    };
+
+    return {
+      id: `${Date.now()}-${crypto.randomUUID()}`,
+      productId: product.id,
+      productSlug: slug,
+      variantId: selectedVariant.id,
+      productName: product.name,
+      productImage: currentImage,
+      unitPrice: selectedVariant.priceOverride ?? product.price,
+      quantity: 1,
+      color: selectedColor,
+      size: selectedSize,
+      fit: 'regular',
+      customizationData,
+      mockupFrontDataUrl: !isBack ? activeDesignDataUrl : null,
+      mockupBackDataUrl: isBack ? activeDesignDataUrl : null,
+      designFrontDataUrl: !isBack ? activeDesignDataUrl : null,
+      designBackDataUrl: isBack ? activeDesignDataUrl : null,
+      createdAt: new Date().toISOString(),
+    };
+  };
+
+  const handleAddToCart = () => {
+    const item = serializeCartItem();
+    if (!item) return;
+
+    cartStore.addItem(item);
+    setCartMessage('Added to cart.');
+  };
+
+  const handleOrderNow = () => {
+    const item = serializeCartItem();
+    if (!item) return;
+
+    cartStore.addItem(item);
+    setShowOrderForm(true);
+    requestAnimationFrame(() => orderSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
   if (loading) {
@@ -401,6 +451,10 @@ export default function ProductDetail() {
           <Link to="/catalog" className="back-link-modern">
             <span className="back-arrow">←</span>
             {t.backToCatalog}
+          </Link>
+          <Link to="/cart" className="product-cart-link">
+            <ShoppingCart size={18} />
+            {t.cartText} ({itemCount})
           </Link>
           <LanguageSwitcher />
         </div>
@@ -588,8 +642,15 @@ export default function ProductDetail() {
             </div>
             <p className="price-note">{t.validateOrder}</p>
           </div>
+          {cartMessage && <p className="cart-feedback">{cartMessage}</p>}
         </div>
       </div>
+
+      {showOrderForm && (
+        <section className="inline-order-section" ref={orderSectionRef}>
+          <OrderForm />
+        </section>
+      )}
 
       {/* Sticky Bottom Action Bar */}
       <div className="bottom-action-bar">
@@ -601,15 +662,21 @@ export default function ProductDetail() {
             </div>
           </div>
           <div className="action-bar-buttons">
-            <button className="btn-add-cart" disabled={!selectedVariant}>
-              {t.addToCart}
-            </button>
             <button
               className="btn-order-now"
-              onClick={handleCustomize}
+              onClick={handleOrderNow}
               disabled={!selectedVariant}
             >
+              <ShoppingBasket size={20} />
               {t.order}
+            </button>
+            <button
+              className="btn-add-cart"
+              onClick={handleAddToCart}
+              disabled={!selectedVariant}
+            >
+              <ShoppingCart size={20} />
+              {t.addToCart}
             </button>
           </div>
         </div>

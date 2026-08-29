@@ -7,6 +7,11 @@ import Customizer from './pages/Customizer';
 import AdminProducts from './pages/AdminProducts';
 import AdminProductEditor from './pages/AdminProductEditor';
 import AdminSettings from './pages/AdminSettings';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import AdminOrders from './pages/AdminOrders';
+import AdminOrderDetail from './pages/AdminOrderDetail';
+import AdminDashboard from './pages/AdminDashboard';
 import './styles/catalog.css';
 
 function App() {
@@ -19,7 +24,12 @@ function App() {
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/custom/product/:slug" element={<ProductDetail />} />
             <Route path="/custom/product/:slug/customize" element={<Customizer />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
             <Route path="/admin" element={<AdminProducts />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/orders/:id" element={<AdminOrderDetail />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/products/new" element={<AdminProductEditor />} />
             <Route path="/admin/products/:id" element={<AdminProductEditor />} />

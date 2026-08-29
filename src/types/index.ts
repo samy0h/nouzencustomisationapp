@@ -151,9 +151,151 @@ export interface Translation {
   customizedProduct: string;
   chooseSize: string;
   validateOrder: string;
+  checkout: string;
+  cashOnDelivery: string;
+  backToCart: string;
+  fullName: string;
+  phoneNumber: string;
+  wilaya: string;
+  selectWilaya: string;
+  wilayaRequired: string;
+  deliveryMethod: string;
+  domicile: string;
+  stopDesk: string;
+  deliveryMethodRequired: string;
+  baladia: string;
+  deliveryAddress: string;
+  paymentMethod: string;
+  orderItems: string;
+  removeItem: string;
+  decreaseQuantity: string;
+  increaseQuantity: string;
+  finalTotal: string;
+  items: string;
+  subtotal: string;
+  delivery: string;
+  total: string;
+  confirmOrder: string;
+  emptyCart: string;
+  continueCustomizing: string;
+  orderConfirmed: string;
+  orderFollowUp: string;
+  orderSubmitError: string;
+  language: string;
 }
 
 export type Language = 'fr' | 'ar' | 'en';
 export type Theme = 'light' | 'dark';
 export type SortOption = 'featured' | 'price-low' | 'price-high';
 export type PrintingSide = 'FRONT' | 'BACK' | 'BOTH';
+
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  productSlug: string;
+  variantId: string;
+  productName: string;
+  productImage: string;
+  unitPrice: number;
+  quantity: number;
+  color: string;
+  size: string;
+  fit: string;
+  customizationData: unknown;
+  mockupFrontDataUrl?: string | null;
+  mockupBackDataUrl?: string | null;
+  designFrontDataUrl?: string | null;
+  designBackDataUrl?: string | null;
+  createdAt: string;
+}
+
+export type DeliveryMethod = 'A_DOMICILE' | 'STOP_DESK';
+
+export interface CheckoutCustomer {
+  customerName: string;
+  phone: string;
+  wilaya: string;
+  deliveryMethod: DeliveryMethod | '';
+  baladia: string;
+  address: string;
+}
+
+export interface ApiOrderItem {
+  id: string;
+  productId: string;
+  variantId: string | null;
+  productNameSnapshot: string;
+  unitPriceSnapshot: number;
+  quantity: number;
+  color: string | null;
+  size: string | null;
+  fit: string | null;
+  customizationData: unknown;
+  mockupFrontUrl: string | null;
+  mockupBackUrl: string | null;
+  designFrontUrl: string | null;
+  designBackUrl: string | null;
+  customizationJsonUrl: string | null;
+  createdAt: string;
+}
+
+export interface ApiOrder {
+  id: string;
+  orderNumber: string;
+  customerName: string;
+  phone: string;
+  wilaya: string;
+  deliveryMethod: DeliveryMethod;
+  baladia: string;
+  address: string;
+  subtotal: number;
+  deliveryCost: number;
+  total: number;
+  paymentMethod: 'COD';
+  status: OrderStatus;
+  confirmedAt: string | null;
+  processingAt: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
+  items: ApiOrderItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ApiOrdersResponse {
+  status: string;
+  data: {
+    orders: Array<Omit<ApiOrder, 'items'> & { items: Array<{ id: string; quantity: number }> }>;
+    pagination: {
+      total: number;
+      limit: number;
+      offset: number;
+      hasMore: boolean;
+    };
+  };
+}
+
+export interface ApiOrderResponse {
+  status: string;
+  data: {
+    order: ApiOrder;
+  };
+}
+
+export interface DashboardStats {
+  totalRevenue: number;
+  todayRevenue: number;
+  weekRevenue: number;
+  monthRevenue: number;
+  totalOrders: number;
+  statusCounts: Partial<Record<OrderStatus, number>>;
+  itemsSold: number;
+  averageOrderValue: number;
+  topProducts: Array<{ product: string; quantity: number }>;
+  recentOrders: Array<Pick<ApiOrder, 'id' | 'orderNumber' | 'customerName' | 'total' | 'status' | 'createdAt'>>;
+  ordersByDay: Array<{ date: string; orders: number; revenue: number }>;
+}

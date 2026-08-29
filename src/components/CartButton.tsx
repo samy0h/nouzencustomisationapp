@@ -1,15 +1,17 @@
 import { useLanguage } from '../contexts/LanguageContext';
+import { useCart } from '../stores/cartStore';
+import { ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const CartButton = () => {
   const { t } = useLanguage();
+  const { itemCount } = useCart();
 
   return (
-    <button className="cart-btn">
-      <svg className="cart-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-      </svg>
+    <Link className="cart-btn" to="/cart">
+      <ShoppingCart className="cart-icon" size={18} />
       <span>{t.cartText}</span>
-      <span className="cart-badge">0</span>
-    </button>
+      <span className="cart-badge">{itemCount}</span>
+    </Link>
   );
 };

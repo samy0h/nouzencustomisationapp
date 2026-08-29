@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import productRoutes from './routes/productRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import productTypeRoutes from './routes/productTypeRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use(cors({
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 
 // Health check endpoint
 app.get('/api/health', (_req: Request, res: Response) => {
@@ -48,6 +50,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/product-types', productTypeRoutes);
+app.use('/api/orders', orderRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
