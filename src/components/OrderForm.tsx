@@ -90,7 +90,15 @@ export default function OrderForm({ onBack }: OrderFormProps) {
     event.preventDefault();
     if (submitting || !items.length) return;
 
-    if (!validateCustomer() || !validateCartItems()) {
+    console.log('[OrderForm] Validating customer:', customer);
+    const customerValid = validateCustomer();
+    console.log('[OrderForm] Customer valid:', customerValid, 'Field errors:', fieldErrors);
+
+    const cartValid = validateCartItems();
+    console.log('[OrderForm] Cart valid:', cartValid);
+
+    if (!customerValid || !cartValid) {
+      console.log('[OrderForm] Validation failed, not submitting');
       return;
     }
 
@@ -98,10 +106,13 @@ export default function OrderForm({ onBack }: OrderFormProps) {
     setError('');
     setFieldErrors({});
     try {
+      console.log('[OrderForm] Submitting order...');
       const response = await api.createOrder({ customer, items });
+      console.log('[OrderForm] Order created:', response.data.order);
       setConfirmedOrder(response.data.order);
       clear();
     } catch (submitError) {
+      console.error('[OrderForm] Submit error:', submitError);
       setError(submitError instanceof Error ? submitError.message : t.orderSubmitError);
     } finally {
       setSubmitting(false);
