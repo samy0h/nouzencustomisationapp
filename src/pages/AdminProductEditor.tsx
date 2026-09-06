@@ -99,15 +99,12 @@ export default function AdminProductEditor() {
       })
       .catch(() => setMessage("Could not load categories."));
 
-  const loadProductTypes = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/api/product-types');
-      const data = await response.json();
-      setProductTypes(data.data.productTypes);
-    } catch (err) {
-      setMessage("Could not load product types.");
-    }
-  };
+  const loadProductTypes = () =>
+    api.getProductTypes()
+      .then((response) => {
+        setProductTypes(response.data.productTypes);
+      })
+      .catch(() => setMessage("Could not load product types."));
 
   const loadProduct = () =>
     api.getAdminProduct(id!).then((response) => {

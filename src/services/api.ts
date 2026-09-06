@@ -110,6 +110,20 @@ export const api = {
   },
 
   /**
+   * Get all categories
+   */
+  getCategories: async (): Promise<{ status: string; data: { categories: Array<{ id: string; name: string }> } }> => {
+    return fetchApi('/api/categories');
+  },
+
+  /**
+   * Get all product types
+   */
+  getProductTypes: async (): Promise<{ status: string; data: { productTypes: Array<{ id: string; name: string }> } }> => {
+    return fetchApi('/api/product-types');
+  },
+
+  /**
    * Health check endpoint
    */
   healthCheck: async (): Promise<{ status: string; message: string; timestamp: string }> => {
