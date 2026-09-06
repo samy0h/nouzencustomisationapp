@@ -93,12 +93,9 @@ export default function AdminProductEditor() {
   } | null>(null);
 
   const loadCategories = () =>
-    api.getProducts({ limit: 100, active: true })
+    api.getCategories()
       .then((response) => {
-        const uniqueCategories = [...new Map(
-          response.data.products.map(p => [p.category.id, p.category])
-        ).values()];
-        setCategories(uniqueCategories);
+        setCategories(response.data.categories);
       })
       .catch(() => setMessage("Could not load categories."));
 
