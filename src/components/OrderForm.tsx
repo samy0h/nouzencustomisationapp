@@ -47,8 +47,9 @@ export default function OrderForm({ onBack }: OrderFormProps) {
     const baladia = customer.baladia.trim();
     const address = customer.address.trim();
 
-    if (name.length < 2 || !/^[\p{L}\s'-]+$/u.test(name)) {
-      errors.customerName = 'Name can only contain letters, spaces, hyphens and apostrophes (min 2 characters)';
+    // Accept Arabic, French, English letters, spaces, hyphens, apostrophes
+    if (name.length < 2) {
+      errors.customerName = 'Name must be at least 2 characters';
     }
     if (!/^0\d{9}$/.test(phone)) {
       errors.phone = 'Phone must start with 0 and have exactly 10 digits';
