@@ -143,6 +143,13 @@ export default function ProductDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableSizes]);
 
+  // Reset order form when cart becomes empty
+  useEffect(() => {
+    if (itemCount === 0 && showOrderForm) {
+      setShowOrderForm(false);
+    }
+  }, [itemCount, showOrderForm]);
+
   // Initialize Fabric.js canvas
   useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return;
@@ -448,12 +455,19 @@ export default function ProductDetail() {
   };
 
   const handleOrderNow = async () => {
-    if (showOrderForm) {
-      // Scroll to the form if it's already shown
+    // If form is shown and cart is empty, reset to allow new order
+    if (showOrderForm && itemCount === 0) {
+      setShowOrderForm(false);
+      return;
+    }
+
+    // If form is shown and cart has items, just scroll to it
+    if (showOrderForm && itemCount > 0) {
       orderSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
 
+    // Add item and show form
     const item = await serializeCartItem();
     if (!item) return;
 
@@ -714,12 +728,12 @@ export default function ProductDetail() {
               disabled={!selectedVariant}
             >
               <ShoppingBasket size={20} />
-              {showOrderForm ? t.confirmOrder || 'Confirm Order' : t.order}
+              {showOrderForm && itemCount > 0 ? t.confirmOrder || 'Confirm Order' : t.order}
             </button>
             <button
               className="btn-add-cart"
               onClick={handleAddToCart}
-              disabled={!selectedVariant || showOrderForm}
+              disabled={!selectedVariant}
             >
               <ShoppingCart size={20} />
               {t.addToCart}
