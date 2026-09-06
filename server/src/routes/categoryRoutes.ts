@@ -35,24 +35,32 @@ router.post('/', requireAdmin, asyncHandler(async (req: Request, res: Response) 
 // Delete a category
 router.delete('/:id', requireAdmin, asyncHandler(async (req: Request, res: Response) => {
   const id = String(req.params.id);
+  const force = req.query.force === 'true';
 
   // Check if any products use this category
   const productCount = await prisma.product.count({
     where: { categoryId: id },
   });
 
-  if (productCount > 0) {
+  if (productCount > 0 && !force) {
     throw new AppError(
-      `Cannot delete category. ${productCount} product(s) are using it. Please reassign those products first.`,
+      `Cannot delete category. ${productCount} product(s) are using it. Add ?force=true to delete anyway (products will be deleted).`,
       400
     );
+  }
+
+  // Delete all products in this category if force is true
+  if (force && productCount > 0) {
+    await prisma.product.deleteMany({
+      where: { categoryId: id },
+    });
   }
 
   await prisma.category.delete({
     where: { id },
   });
 
-  res.json({ status: 'success', message: 'Category deleted successfully' });
+  res.json({ status: 'success', message: 'Category deleted successfully.' });
 }));
 
 export default router;

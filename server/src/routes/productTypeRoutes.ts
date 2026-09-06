@@ -35,24 +35,32 @@ router.post('/', requireAdmin, asyncHandler(async (req: Request, res: Response) 
 // Delete a product type
 router.delete('/:id', requireAdmin, asyncHandler(async (req: Request, res: Response) => {
   const id = String(req.params.id);
+  const force = req.query.force === 'true';
 
   // Check if any products use this type
   const productCount = await prisma.product.count({
     where: { typeId: id },
   });
 
-  if (productCount > 0) {
+  if (productCount > 0 && !force) {
     throw new AppError(
-      `Cannot delete product type. ${productCount} product(s) are using it. Please reassign those products first.`,
+      `Cannot delete product type. ${productCount} product(s) are using it. Add ?force=true to delete anyway (products will be deleted).`,
       400
     );
+  }
+
+  // Delete all products with this type if force is true
+  if (force && productCount > 0) {
+    await prisma.product.deleteMany({
+      where: { typeId: id },
+    });
   }
 
   await prisma.productType.delete({
     where: { id },
   });
 
-  res.json({ status: 'success', message: 'Product type deleted successfully' });
+  res.json({ status: 'success', message: 'Product type deleted successfully.' });
 }));
 
 export default router;

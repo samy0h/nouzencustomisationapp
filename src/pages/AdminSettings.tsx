@@ -86,11 +86,11 @@ export default function AdminSettings() {
   };
 
   const deleteCategory = async (categoryId: string, categoryName: string) => {
-    if (!window.confirm(`Delete category "${categoryName}"? Products in this category will need to be reassigned.`)) {
+    if (!window.confirm(`Delete category "${categoryName}"?\n\nWARNING: This will also delete ALL products in this category. This cannot be undone.`)) {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3001/api/categories/${categoryId}`, {
+      const response = await fetch(`http://localhost:3001/api/categories/${categoryId}?force=true`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
@@ -102,7 +102,7 @@ export default function AdminSettings() {
         throw new Error(data.message || 'Could not delete category.');
       }
 
-      setMessage('Category deleted successfully.');
+      setMessage('Category and its products deleted successfully.');
       setError('');
       await loadCategories();
     } catch (err) {
@@ -147,11 +147,11 @@ export default function AdminSettings() {
   };
 
   const deleteProductType = async (typeId: string, typeName: string) => {
-    if (!window.confirm(`Delete product type "${typeName}"? Products using this type will need to be reassigned.`)) {
+    if (!window.confirm(`Delete product type "${typeName}"?\n\nWARNING: This will also delete ALL products using this type. This cannot be undone.`)) {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3001/api/product-types/${typeId}`, {
+      const response = await fetch(`http://localhost:3001/api/product-types/${typeId}?force=true`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
@@ -163,7 +163,7 @@ export default function AdminSettings() {
         throw new Error(data.message || 'Could not delete product type.');
       }
 
-      setMessage('Product type deleted successfully.');
+      setMessage('Product type and its products deleted successfully.');
       setError('');
       await loadProductTypes();
     } catch (err) {
