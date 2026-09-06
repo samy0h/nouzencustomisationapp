@@ -150,6 +150,11 @@ export const api = {
     method: 'DELETE',
   }),
 
+  updateAdminProductVariantSizes: async (id: string, color: string, sizes: string[]) => fetchApi<{ status: string; message: string }>(`/api/products/admin/${id}/variants/color/${encodeURIComponent(color)}/sizes`, {
+    method: 'PATCH',
+    body: JSON.stringify({ sizes }),
+  }),
+
   createAdminProduct: async (payload: unknown) => fetchApi<{ status: string; data: { product: ApiProduct } }>('/api/products/admin', {
     method: 'POST',
     body: JSON.stringify(payload),

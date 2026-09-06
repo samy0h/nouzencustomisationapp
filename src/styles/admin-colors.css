@@ -138,3 +138,45 @@
   padding-top: 0.5rem;
   border-top: 1px solid #f0f0f0;
 }
+.color-sizes-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+.color-sizes-editor strong {
+  font-size: 0.75rem;
+  color: #374151;
+}
+.size-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.size-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+}
+.size-checkboxes input[type="checkbox"] {
+  cursor: pointer;
+}
+.admin-save-sizes {
+  align-self: flex-start;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-save-sizes:hover {
+  background: #15803d;
+}

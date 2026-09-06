@@ -77,6 +77,14 @@ export default function AdminProductEditor() {
   const [newColorHex, setNewColorHex] = useState("#111111");
   const [selectedBaseHex, setSelectedBaseHex] = useState<string | null>(null);
   const [newColorSizes, setNewColorSizes] = useState<string[]>([]);
+  const [editingColorSizes, setEditingColorSizes] = useState<Record<string, string[]>>({});
+
+  // Helper to sort sizes in proper order
+  const sortSizes = (sizes: string[]): string[] => {
+    const order = { "XS": 0, "S": 1, "M": 2, "L": 3, "XL": 4, "XXL": 5, "XXXL": 6 };
+    return [...sizes].sort((a, b) => (order[a as keyof typeof order] || 999) - (order[b as keyof typeof order] || 999));
+  };
+
   const [areas, setAreas] = useState<Record<Side, Area>>({
     FRONT: defaultArea,
     BACK: defaultArea,
@@ -904,6 +912,8 @@ export default function AdminProductEditor() {
                       const colorVariants = product?.variants.filter((v) => v.color === colorName) || [];
                       const colorHex = colorVariants[0]?.colorHex || '#cccccc';
                       const isSelected = color === colorName;
+                      const currentSizes = sortSizes(colorVariants.map((v) => v.size));
+                      const editingSizes = editingColorSizes[colorName] || currentSizes;
 
                       return (
                         <div key={colorName} className={`color-card ${isSelected ? 'selected' : ''}`}>
@@ -912,7 +922,6 @@ export default function AdminProductEditor() {
                             onClick={() => {
                               setColor(colorName);
                               setMessage(`Now editing: ${colorName}`);
-                              // Scroll to the top section smoothly
                               window.scrollTo({ top: 0, behavior: 'smooth' });
                             }}
                           >
@@ -922,7 +931,7 @@ export default function AdminProductEditor() {
                               type="button"
                               className="color-delete-btn"
                               onClick={async (e) => {
-                                e.stopPropagation(); // Prevent triggering color selection
+                                e.stopPropagation();
                                 if (!window.confirm(`Remove "${colorName}" and all its variants?`)) return;
                                 try {
                                   await api.deleteAdminProductColor(product!.id, colorName);
@@ -964,8 +973,49 @@ export default function AdminProductEditor() {
                               )}
                             </div>
                           </div>
-                          <div className="color-sizes">
-                            Sizes: {colorVariants.map((v) => v.size).join(', ')}
+                          <div className="color-sizes-editor">
+                            <strong>Sizes:</strong>
+                            <div className="size-checkboxes">
+                              {allSizes.map((size) => (
+                                <label key={size}>
+                                  <input
+                                    type="checkbox"
+                                    checked={editingSizes.includes(size)}
+                                    onChange={(e) => {
+                                      e.stopPropagation();
+                                      const newSizes = e.target.checked
+                                        ? sortSizes([...editingSizes, size])
+                                        : editingSizes.filter(s => s !== size);
+                                      setEditingColorSizes(prev => ({ ...prev, [colorName]: newSizes }));
+                                    }}
+                                  />
+                                  {size}
+                                </label>
+                              ))}
+                            </div>
+                            {editingSizes.join(', ') !== currentSizes.join(', ') && (
+                              <button
+                                type="button"
+                                className="admin-save-sizes"
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  try {
+                                    await api.updateAdminProductVariantSizes(product!.id, colorName, editingSizes);
+                                    await loadProduct();
+                                    setEditingColorSizes(prev => {
+                                      const updated = { ...prev };
+                                      delete updated[colorName];
+                                      return updated;
+                                    });
+                                    setMessage(`Sizes updated for ${colorName}`);
+                                  } catch (error) {
+                                    setMessage(error instanceof Error ? error.message : 'Could not update sizes.');
+                                  }
+                                }}
+                              >
+                                Save Sizes
+                              </button>
+                            )}
                           </div>
                         </div>
                       );
