@@ -1,28 +1,28 @@
 {
-  "productSlug": "hoodie",
+  "productSlug": "tshirt-standard",
   "printingSide": "FRONT",
   "printAreas": [
     {
-      "id": "d817ea42-2dab-466a-be3a-79482a0bde49",
-      "productId": "3495ec02-1667-47fa-8c2c-eeaba242d8b4",
+      "id": "79e17dfa-598d-4c2f-8547-da7b701d1329",
+      "productId": "3e4e57f3-24f2-493b-abe4-cd0a2949e4d3",
       "side": "FRONT",
-      "x": 0.32,
-      "y": 0.2633333333333333,
-      "width": 0.3683333333333333,
-      "height": 0.48,
+      "x": 0.2304166666666667,
+      "y": 0.1433333333333333,
+      "width": 0.5475,
+      "height": 0.7283333333333334,
       "enabled": true,
-      "updatedAt": "2026-08-29T01:28:43.279Z"
+      "updatedAt": "2026-08-28T15:28:20.078Z"
     },
     {
-      "id": "b964616a-5595-4e36-aedb-2b617ab9aaff",
-      "productId": "3495ec02-1667-47fa-8c2c-eeaba242d8b4",
+      "id": "470203d2-de70-471e-a307-5e1f9cfe7b5f",
+      "productId": "3e4e57f3-24f2-493b-abe4-cd0a2949e4d3",
       "side": "BACK",
       "x": 0.27,
       "y": 0.165,
       "width": 0.46,
       "height": 0.66,
       "enabled": true,
-      "updatedAt": "2026-08-29T01:28:43.284Z"
+      "updatedAt": "2026-08-28T15:28:20.081Z"
     }
   ],
   "designsBySide": {
@@ -35,7 +35,7 @@
           "originX": "center",
           "originY": "center",
           "left": 403.33,
-          "top": 503.33,
+          "top": 507.5,
           "width": 222.28,
           "height": 67.8,
           "fill": "#ffffff",
@@ -87,9 +87,9 @@
         "originX": "center",
         "originY": "center",
         "left": 403.33,
-        "top": 503.33,
-        "width": 294.67,
-        "height": 480,
+        "top": 507.5,
+        "width": 438,
+        "height": 728.33,
         "fill": "rgb(0,0,0)",
         "stroke": null,
         "strokeWidth": 1,
