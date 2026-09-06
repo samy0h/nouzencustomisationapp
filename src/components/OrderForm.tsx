@@ -109,28 +109,29 @@ export default function OrderForm({ onBack }: OrderFormProps) {
     try {
       console.log('[OrderForm] Submitting order...');
       const response = await api.createOrder({ customer, items });
-      console.log('[OrderForm] Order created:', response);
-      console.log('[OrderForm] Response data:', response.data);
-      console.log('[OrderForm] Order object:', response.data?.order);
+      console.log('[OrderForm] RAW Response:', JSON.stringify(response, null, 2));
 
-      if (!response.data?.order) {
-        console.error('[OrderForm] ERROR: No order object in response!');
+      const order = response.data?.order || response.order || response.data;
+      console.log('[OrderForm] Extracted order:', order);
+
+      if (!order || !order.orderNumber) {
+        console.error('[OrderForm] ERROR: No valid order in response!');
         setError('Order was created but response is invalid');
         return;
       }
 
-      console.log('[OrderForm] Order number:', response.data.order.orderNumber);
-      console.log('[OrderForm] Order total:', response.data.order.total);
+      console.log('[OrderForm] Order number:', order.orderNumber);
+      console.log('[OrderForm] Order total:', order.total);
 
       // Clear cart
       console.log('[OrderForm] Clearing cart...');
       clear();
 
       // Build redirect URL
-      const redirectUrl = `/thank-you?order=${response.data.order.orderNumber}&total=${response.data.order.total}`;
+      const redirectUrl = `/thank-you?order=${order.orderNumber}&total=${order.total}`;
       console.log('[OrderForm] Redirecting to:', redirectUrl);
 
-      // Redirect to the dedicated thank-you page with the order data
+      // Redirect to the dedicated thank-you page
       navigate(redirectUrl, { replace: true });
       console.log('[OrderForm] Navigate called');
     } catch (submitError) {
