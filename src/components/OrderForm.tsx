@@ -110,11 +110,20 @@ export default function OrderForm({ onBack }: OrderFormProps) {
       console.log('[OrderForm] Submitting order...');
       const response = await api.createOrder({ customer, items });
       console.log('[OrderForm] Order created:', response.data.order);
+      console.log('[OrderForm] Order number:', response.data.order.orderNumber);
+      console.log('[OrderForm] Order total:', response.data.order.total);
 
+      // Clear cart
+      console.log('[OrderForm] Clearing cart...');
       clear();
 
+      // Build redirect URL
+      const redirectUrl = `/thank-you?order=${response.data.order.orderNumber}&total=${response.data.order.total}`;
+      console.log('[OrderForm] Redirecting to:', redirectUrl);
+
       // Redirect to the dedicated thank-you page with the order data
-      navigate(`/thank-you?order=${response.data.order.orderNumber}&total=${response.data.order.total}`, { replace: true });
+      navigate(redirectUrl, { replace: true });
+      console.log('[OrderForm] Navigate called');
     } catch (submitError) {
       console.error('[OrderForm] Submit error:', submitError);
       setError(submitError instanceof Error ? submitError.message : t.orderSubmitError);
