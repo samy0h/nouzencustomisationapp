@@ -955,10 +955,66 @@ export default function AdminProductEditor() {
                               {frontImage ? (
                                 <div className="image-info">
                                   <img src={frontImage.url} alt={`${colorName} front`} className="color-thumbnail" />
-                                  <span className="image-filename">{frontImage.fileName || 'No filename'}</span>
+                                  <div className="image-actions">
+                                    <span className="image-filename">{frontImage.fileName || 'No filename'}</span>
+                                    <button
+                                      type="button"
+                                      className="image-remove-btn"
+                                      onClick={async (e) => {
+                                        e.stopPropagation();
+                                        if (!window.confirm(`Remove front image for ${colorName}?`)) return;
+                                        try {
+                                          await api.deleteAdminProductImage(frontImage.id);
+                                          await loadProduct();
+                                          setMessage(`Front image removed for ${colorName}`);
+                                        } catch (error) {
+                                          setMessage(error instanceof Error ? error.message : 'Could not remove image.');
+                                        }
+                                      }}
+                                      title="Remove front image"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
                                 </div>
                               ) : (
-                                <span className="image-missing">No front image</span>
+                                <label className="image-upload-btn">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={async (e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      try {
+                                        const reader = new FileReader();
+                                        reader.onload = async (event) => {
+                                          const dataUrl = event.target?.result as string;
+                                          const colorHex = colorVariants[0]?.colorHex || '#000000';
+                                          await api.saveAdminProductDesign(product!.id, {
+                                            images: [
+                                              ...product!.productImages.map(img => ({
+                                                color: img.color,
+                                                colorHex: product!.variants.find(v => v.color === img.color)?.colorHex || '#000000',
+                                                side: img.side,
+                                                dataUrl: img.url,
+                                                fileName: img.fileName
+                                              })),
+                                              { color: colorName, colorHex, side: 'FRONT', dataUrl, fileName: file.name }
+                                            ],
+                                            printAreas: product!.printAreas
+                                          });
+                                          await loadProduct();
+                                          setMessage(`Front image added for ${colorName}`);
+                                        };
+                                        reader.readAsDataURL(file);
+                                      } catch (error) {
+                                        setMessage(error instanceof Error ? error.message : 'Could not add image.');
+                                      }
+                                    }}
+                                  />
+                                  + Add Front
+                                </label>
                               )}
                             </div>
                             <div className="color-image-item">
@@ -966,10 +1022,66 @@ export default function AdminProductEditor() {
                               {backImage ? (
                                 <div className="image-info">
                                   <img src={backImage.url} alt={`${colorName} back`} className="color-thumbnail" />
-                                  <span className="image-filename">{backImage.fileName || 'No filename'}</span>
+                                  <div className="image-actions">
+                                    <span className="image-filename">{backImage.fileName || 'No filename'}</span>
+                                    <button
+                                      type="button"
+                                      className="image-remove-btn"
+                                      onClick={async (e) => {
+                                        e.stopPropagation();
+                                        if (!window.confirm(`Remove back image for ${colorName}?`)) return;
+                                        try {
+                                          await api.deleteAdminProductImage(backImage.id);
+                                          await loadProduct();
+                                          setMessage(`Back image removed for ${colorName}`);
+                                        } catch (error) {
+                                          setMessage(error instanceof Error ? error.message : 'Could not remove image.');
+                                        }
+                                      }}
+                                      title="Remove back image"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
                                 </div>
                               ) : (
-                                <span className="image-missing">No back image</span>
+                                <label className="image-upload-btn">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={async (e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      try {
+                                        const reader = new FileReader();
+                                        reader.onload = async (event) => {
+                                          const dataUrl = event.target?.result as string;
+                                          const colorHex = colorVariants[0]?.colorHex || '#000000';
+                                          await api.saveAdminProductDesign(product!.id, {
+                                            images: [
+                                              ...product!.productImages.map(img => ({
+                                                color: img.color,
+                                                colorHex: product!.variants.find(v => v.color === img.color)?.colorHex || '#000000',
+                                                side: img.side,
+                                                dataUrl: img.url,
+                                                fileName: img.fileName
+                                              })),
+                                              { color: colorName, colorHex, side: 'BACK', dataUrl, fileName: file.name }
+                                            ],
+                                            printAreas: product!.printAreas
+                                          });
+                                          await loadProduct();
+                                          setMessage(`Back image added for ${colorName}`);
+                                        };
+                                        reader.readAsDataURL(file);
+                                      } catch (error) {
+                                        setMessage(error instanceof Error ? error.message : 'Could not add image.');
+                                      }
+                                    }}
+                                  />
+                                  + Add Back
+                                </label>
                               )}
                             </div>
                           </div>
