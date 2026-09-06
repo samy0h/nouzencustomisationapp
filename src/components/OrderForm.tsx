@@ -130,17 +130,19 @@ export default function OrderForm({ onBack }: OrderFormProps) {
       console.log('[OrderForm] Order number:', order.orderNumber);
       console.log('[OrderForm] Order total:', order.total);
 
-      // Clear cart
-      console.log('[OrderForm] Clearing cart...');
-      clear();
-
       // Build redirect URL
       const redirectUrl = `/thank-you?order=${order.orderNumber}&total=${order.total}`;
-      console.log('[OrderForm] Redirecting to:', redirectUrl);
+      console.log('[OrderForm] Built redirect URL:', redirectUrl);
 
-      // Redirect to the dedicated thank-you page
+      // Redirect FIRST before clearing cart (cart clear can interfere with navigation)
+      console.log('[OrderForm] Initiating navigation...');
       navigate(redirectUrl, { replace: true });
       console.log('[OrderForm] Navigate called');
+
+      // Clear cart AFTER navigation is initiated
+      console.log('[OrderForm] Clearing cart...');
+      clear();
+      console.log('[OrderForm] Cart cleared');
     } catch (submitError) {
       console.error('[OrderForm] CATCH ERROR:', submitError);
       console.error('[OrderForm] Error message:', submitError instanceof Error ? submitError.message : submitError);
