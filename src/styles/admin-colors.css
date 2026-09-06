@@ -1,0 +1,102 @@
+/* Admin Colors Overview */
+.admin-colors-overview {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f7f4f0;
+  border: 1px solid #e5ddd5;
+  border-radius: 8px;
+}
+
+.admin-colors-overview > strong {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #6d6259;
+}
+
+.colors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.color-card {
+  background: white;
+  border: 1px solid #d9d0c8;
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.color-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.color-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.color-images {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.color-image-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.image-label {
+  font-size: 0.75rem;
+  color: #6d6259;
+  font-weight: 500;
+}
+
+.image-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e5ddd5;
+}
+
+.image-filename {
+  font-size: 0.75rem;
+  color: #766c64;
+  word-break: break-all;
+  flex: 1;
+}
+
+.image-missing {
+  font-size: 0.75rem;
+  color: #999;
+  font-style: italic;
+}
+
+.color-sizes {
+  font-size: 0.75rem;
+  color: #766c64;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}

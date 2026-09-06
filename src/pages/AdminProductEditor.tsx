@@ -5,6 +5,7 @@ import { api } from "../services/api";
 import { getProductImage } from "../utils/imageHelpers";
 import type { AdminProductImage, ApiProduct, PrintAreaConfig } from "../types";
 import "../styles/admin.css";
+import "../styles/admin-colors.css";
 
 type Side = "FRONT" | "BACK";
 type Area = {
@@ -882,6 +883,62 @@ export default function AdminProductEditor() {
                   Add color
                 </button>
               </div>
+
+              {/* Colors Overview Section */}
+              {colors.length > 0 && (
+                <div className="admin-colors-overview">
+                  <strong>Current Colors ({colors.length})</strong>
+                  <div className="colors-grid">
+                    {colors.map((colorName) => {
+                      const frontImage = product?.productImages.find(
+                        (img) => img.color === colorName && img.side === 'FRONT'
+                      );
+                      const backImage = product?.productImages.find(
+                        (img) => img.color === colorName && img.side === 'BACK'
+                      );
+                      const colorVariants = product?.variants.filter((v) => v.color === colorName) || [];
+                      const colorHex = colorVariants[0]?.colorHex || '#cccccc';
+
+                      return (
+                        <div key={colorName} className="color-card">
+                          <div className="color-card-header">
+                            <div className="color-swatch" style={{ backgroundColor: colorHex }}></div>
+                            <span className="color-name">{colorName}</span>
+                          </div>
+                          <div className="color-images">
+                            <div className="color-image-item">
+                              <span className="image-label">Front:</span>
+                              {frontImage ? (
+                                <div className="image-info">
+                                  <img src={frontImage.url} alt={`${colorName} front`} className="color-thumbnail" />
+                                  <span className="image-filename">{frontImage.fileName || 'No filename'}</span>
+                                </div>
+                              ) : (
+                                <span className="image-missing">No front image</span>
+                              )}
+                            </div>
+                            <div className="color-image-item">
+                              <span className="image-label">Back:</span>
+                              {backImage ? (
+                                <div className="image-info">
+                                  <img src={backImage.url} alt={`${colorName} back`} className="color-thumbnail" />
+                                  <span className="image-filename">{backImage.fileName || 'No filename'}</span>
+                                </div>
+                              ) : (
+                                <span className="image-missing">No back image</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="color-sizes">
+                            Sizes: {colorVariants.map((v) => v.size).join(', ')}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="admin-segmented">
                 <span>Side</span>
                 <button
