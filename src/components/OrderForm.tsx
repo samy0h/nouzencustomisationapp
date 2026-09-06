@@ -110,8 +110,14 @@ export default function OrderForm({ onBack }: OrderFormProps) {
       console.log('[OrderForm] Submitting order...');
       const response = await api.createOrder({ customer, items });
       console.log('[OrderForm] Order created:', response.data.order);
+
+      // Set confirmed order FIRST before clearing cart
       setConfirmedOrder(response.data.order);
-      clear();
+
+      // Clear cart after a delay to allow confirmation to render
+      setTimeout(() => {
+        clear();
+      }, 100);
     } catch (submitError) {
       console.error('[OrderForm] Submit error:', submitError);
       setError(submitError instanceof Error ? submitError.message : t.orderSubmitError);
