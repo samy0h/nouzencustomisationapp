@@ -35,16 +35,28 @@ class ApiError extends Error {
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   try {
     const url = `${API_BASE_URL}${endpoint}`;
+    const token = localStorage.getItem('adminToken');
+
     const response = await fetch(url, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         ...options?.headers,
       },
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+
+      if (response.status === 401) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUsername');
+        if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+          window.location.href = '/admin/login';
+        }
+      }
+
       throw new ApiError(
         errorData.message || `HTTP ${response.status}: ${response.statusText}`,
         response.status
@@ -57,7 +69,6 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
       throw error;
     }
 
-    // Network or other errors
     throw new ApiError(
       'Unable to connect to the server. Please check your connection.',
       undefined,
@@ -205,6 +216,11 @@ export const api = {
 
   deleteOrderItem: async (orderId: string, itemId: string): Promise<{ status: string; data: { order: ApiOrder } }> => fetchApi(`/api/orders/${orderId}/items/${itemId}`, {
     method: 'DELETE',
+  }),
+
+  adminLogin: async (username: string, password: string): Promise<{ status: string; data: { token: string; username: string } }> => fetchApi('/api/auth/admin/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
   }),
 };
 

@@ -1,12 +1,13 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import prisma from '../utils/prisma.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { requireAdmin } from '../middleware/adminAuth.js';
 
 const router = Router();
 
 // Get all categories
-router.get('/', asyncHandler(async (req, res) => {
+router.get('/', asyncHandler(async (_req: Request, res: Response) => {
   const categories = await prisma.category.findMany({
     orderBy: { name: 'asc' },
   });
@@ -14,7 +15,7 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 // Create a new category
-router.post('/', asyncHandler(async (req, res) => {
+router.post('/', requireAdmin, asyncHandler(async (req: Request, res: Response) => {
   const { name, slug } = req.body as { name?: string; slug?: string };
 
   if (!name?.trim() || !slug?.trim()) {
@@ -32,8 +33,8 @@ router.post('/', asyncHandler(async (req, res) => {
 }));
 
 // Delete a category
-router.delete('/:id', asyncHandler(async (req, res) => {
-  const { id } = req.params;
+router.delete('/:id', requireAdmin, asyncHandler(async (req: Request, res: Response) => {
+  const id = String(req.params.id);
 
   // Check if any products use this category
   const productCount = await prisma.product.count({

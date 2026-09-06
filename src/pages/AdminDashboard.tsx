@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import type { DashboardStats, OrderStatus } from '../types';
+import { useAdminAuth } from '../hooks/useAdminAuth';
 import '../styles/admin.css';
 
 const statuses: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
@@ -10,6 +11,7 @@ const formatDzd = (value: number) => `${Math.round(value).toLocaleString()} DZD`
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [error, setError] = useState('');
+  const { logout, getUsername } = useAdminAuth();
 
   useEffect(() => {
     api.getDashboardStats()
@@ -26,6 +28,10 @@ export default function AdminDashboard() {
         <nav className="admin-top-links">
           <Link to="/admin" className="admin-back">Products</Link>
           <Link to="/admin/orders" className="admin-back">Orders</Link>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ fontSize: '0.875rem', color: '#666' }}>👤 {getUsername()}</span>
+            <button onClick={logout} style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}>Logout</button>
+          </div>
         </nav>
         <header className="admin-header">
           <div>

@@ -158,9 +158,21 @@ export default function AdminProductEditor() {
   const allSizes = useMemo(
     () => {
       if (isNewProduct) {
-        return ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'One Size'];
+        return ['S', 'M', 'L', 'XL', 'XXL'];
       }
-      return [...new Set(product?.variants.map((variant) => variant.size) || [])];
+      const existingSizes = [...new Set(product?.variants.map((variant) => variant.size) || [])];
+      // Ensure standard sizes are always available
+      const standardSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+      const allUniqueSizes = [...new Set([...existingSizes, ...standardSizes])];
+      // Sort by size order
+      const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+      return allUniqueSizes.sort((a, b) => {
+        const aIndex = sizeOrder.indexOf(a);
+        const bIndex = sizeOrder.indexOf(b);
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+        return aIndex - bIndex;
+      });
     },
     [product, isNewProduct],
   );
@@ -357,12 +369,21 @@ export default function AdminProductEditor() {
     }
   };
   const deleteCurrentImage = async () => {
-    if (!product) return;
-    delete draftImagesRef.current[`${color}:${side}`];
-    if (currentImage) await api.deleteAdminProductImage(currentImage.id);
+    const draftKey = `${color}:${side}`;
+
+    // Delete from draft if it exists
+    if (draftImagesRef.current[draftKey]) {
+      delete draftImagesRef.current[draftKey];
+    }
+
+    // Delete from server if it's a saved image
+    if (currentImage && product) {
+      await api.deleteAdminProductImage(currentImage.id);
+      await loadProduct();
+    }
+
     setImageUrl("");
     setFileName("");
-    await loadProduct();
     setMessage("Mockup deleted.");
   };
   const removeColor = async () => {

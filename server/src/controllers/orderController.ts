@@ -10,6 +10,7 @@ import {
 } from '../utils/validation.js';
 import { saveOrderItemFiles } from '../utils/orderFiles.js';
 import { getDeliveryCost } from '../utils/deliveryRates.js';
+import { sendOrderNotificationEmail } from '../utils/orderNotificationEmail.js';
 
 const SUCCESSFUL_REVENUE_STATUSES = ['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'] as const;
 
@@ -127,6 +128,15 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     include: orderInclude,
   });
   console.log('[ORDER] Order created:', order.id);
+
+  sendOrderNotificationEmail({
+    orderNumber: order.orderNumber,
+    customerName: order.customerName,
+    wilaya: order.wilaya,
+    total: order.total,
+  }).catch(err => {
+    console.error('[ORDER] Failed to send notification email:', err);
+  });
 
   console.log('[ORDER] Preparing response');
   const responseData = { status: 'success', data: { order } };

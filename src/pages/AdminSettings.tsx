@@ -1,28 +1,35 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../services/api';
 import '../styles/admin.css';
 
 export default function AdminSettings() {
   const [categories, setCategories] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [productTypes, setProductTypes] = useState<Array<{ id: string; name: string; slug: string }>>([]);
+  const [users, setUsers] = useState<string[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newTypeName, setNewTypeName] = useState('');
+  const [newUsername, setNewUsername] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [changePasswordUsername, setChangePasswordUsername] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     loadCategories();
     loadProductTypes();
+    loadUsers();
   }, []);
 
   const loadCategories = async () => {
     try {
-      const response = await api.getProducts({ limit: 100, active: true });
-      const uniqueCategories = [...new Map(
-        response.data.products.map(p => [p.category.id, p.category])
-      ).values()];
-      setCategories(uniqueCategories);
+      const response = await fetch('http://localhost:3001/api/categories', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
+      });
+      const data = await response.json();
+      setCategories(data.data.categories);
     } catch (err) {
       setError('Could not load categories.');
     }
@@ -30,7 +37,11 @@ export default function AdminSettings() {
 
   const loadProductTypes = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/product-types');
+      const response = await fetch('http://localhost:3001/api/product-types', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
+      });
       const data = await response.json();
       setProductTypes(data.data.productTypes);
     } catch (err) {
@@ -51,11 +62,19 @@ export default function AdminSettings() {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
 
-      await fetch('http://localhost:3001/api/categories', {
+      const response = await fetch('http://localhost:3001/api/categories', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
         body: JSON.stringify({ name: newCategoryName.trim(), slug }),
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Could not create category.');
+      }
 
       setNewCategoryName('');
       setMessage('Category created successfully.');
@@ -71,9 +90,18 @@ export default function AdminSettings() {
       return;
     }
     try {
-      await fetch(`http://localhost:3001/api/categories/${categoryId}`, {
+      const response = await fetch(`http://localhost:3001/api/categories/${categoryId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Could not delete category.');
+      }
+
       setMessage('Category deleted successfully.');
       setError('');
       await loadCategories();
@@ -95,11 +123,19 @@ export default function AdminSettings() {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
 
-      await fetch('http://localhost:3001/api/product-types', {
+      const response = await fetch('http://localhost:3001/api/product-types', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
         body: JSON.stringify({ name: newTypeName.trim(), slug }),
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Could not create product type.');
+      }
 
       setNewTypeName('');
       setMessage('Product type created successfully.');
@@ -117,6 +153,9 @@ export default function AdminSettings() {
     try {
       const response = await fetch(`http://localhost:3001/api/product-types/${typeId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
       });
 
       if (!response.ok) {
@@ -132,6 +171,104 @@ export default function AdminSettings() {
     }
   };
 
+  const loadUsers = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
+      });
+      const data = await response.json();
+      setUsers(data.data.users);
+    } catch (err) {
+      setError('Could not load users.');
+    }
+  };
+
+  const addUser = async () => {
+    if (!newUsername.trim() || !newUserPassword.trim()) {
+      setError('Username and password are required.');
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
+        body: JSON.stringify({ username: newUsername.trim(), password: newUserPassword }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Could not add user.');
+      }
+
+      setNewUsername('');
+      setNewUserPassword('');
+      setMessage('User added successfully.');
+      setError('');
+      await loadUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not add user.');
+    }
+  };
+
+  const removeUser = async (username: string) => {
+    if (!window.confirm(`Remove user "${username}"?`)) {
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3001/api/auth/admin/users/${username}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Could not remove user.');
+      }
+
+      setMessage('User removed successfully.');
+      setError('');
+      await loadUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not remove user.');
+    }
+  };
+
+  const changePassword = async () => {
+    if (!changePasswordUsername || !newPassword.trim()) {
+      setError('Username and new password are required.');
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/admin/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
+        body: JSON.stringify({ username: changePasswordUsername, newPassword }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Could not change password.');
+      }
+
+      setChangePasswordUsername('');
+      setNewPassword('');
+      setMessage('Password changed successfully.');
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not change password.');
+    }
+  };
+
   return (
     <main className="admin-page">
       <div className="admin-shell">
@@ -139,14 +276,95 @@ export default function AdminSettings() {
         <header className="admin-header">
           <div>
             <span className="admin-eyebrow">ADMIN SETTINGS</span>
-            <h1>Categories & Types</h1>
-            <p>Manage product categories and types for your store.</p>
+            <h1>Settings</h1>
+            <p>Manage users, categories and types for your store.</p>
           </div>
         </header>
         {message && <p className="admin-message">{message}</p>}
         {error && <p className="admin-error">{error}</p>}
 
         <div style={{ display: 'grid', gap: '1.5rem' }}>
+          {/* Users Section */}
+          <section className="admin-panel">
+            <h2>Admin Users</h2>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'grid', gap: '.4rem', color: '#6d6259', fontSize: '.78rem', fontWeight: 600 }}>
+                Add new user
+                <div style={{ display: 'flex', gap: '.5rem' }}>
+                  <input
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    placeholder="Username"
+                    style={{ flex: 1, border: '1px solid #d9d0c8', borderRadius: '7px', padding: '.65rem', background: '#fff', font: 'inherit' }}
+                  />
+                  <input
+                    type="password"
+                    value={newUserPassword}
+                    onChange={(e) => setNewUserPassword(e.target.value)}
+                    placeholder="Password"
+                    style={{ flex: 1, border: '1px solid #d9d0c8', borderRadius: '7px', padding: '.65rem', background: '#fff', font: 'inherit' }}
+                  />
+                  <button className="admin-secondary" onClick={addUser}>
+                    Add User
+                  </button>
+                </div>
+              </label>
+            </div>
+            <div style={{ display: 'grid', gap: '.75rem' }}>
+              {users.map((username) => (
+                <div
+                  key={username}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '.75rem 1rem',
+                    background: '#f7f4f0',
+                    border: '1px solid #e5ddd5',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <strong style={{ fontSize: '.9rem' }}>{username}</strong>
+                  <button
+                    className="admin-danger"
+                    onClick={() => removeUser(username)}
+                    style={{ padding: '.4rem .7rem', fontSize: '.75rem' }}
+                    disabled={users.length === 1}
+                  >
+                    {users.length === 1 ? 'Last User' : 'Remove'}
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: '1.5rem' }}>
+              <label style={{ display: 'grid', gap: '.4rem', color: '#6d6259', fontSize: '.78rem', fontWeight: 600 }}>
+                Change password
+                <div style={{ display: 'flex', gap: '.5rem' }}>
+                  <select
+                    value={changePasswordUsername}
+                    onChange={(e) => setChangePasswordUsername(e.target.value)}
+                    style={{ flex: 1, border: '1px solid #d9d0c8', borderRadius: '7px', padding: '.65rem', background: '#fff', font: 'inherit' }}
+                  >
+                    <option value="">Select user</option>
+                    {users.map((username) => (
+                      <option key={username} value={username}>{username}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="New password"
+                    style={{ flex: 1, border: '1px solid #d9d0c8', borderRadius: '7px', padding: '.65rem', background: '#fff', font: 'inherit' }}
+                  />
+                  <button className="admin-secondary" onClick={changePassword}>
+                    Change
+                  </button>
+                </div>
+              </label>
+            </div>
+          </section>
+
           {/* Categories Section */}
           <section className="admin-panel">
             <h2>Categories</h2>

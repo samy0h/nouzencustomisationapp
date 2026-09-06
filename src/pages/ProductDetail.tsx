@@ -355,7 +355,45 @@ export default function ProductDetail() {
     canvas.renderAll();
   };
 
-  const serializeCartItem = () => {
+  const MOCKUP_CANVAS_WIDTH = 800;
+  const MOCKUP_CANVAS_HEIGHT = 1000;
+
+  const loadImageElement = (src: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+  const captureMockupDataUrl = async (productImageSrc: string): Promise<string | null> => {
+    const designCanvasEl = fabricCanvasRef.current?.getElement();
+    if (!designCanvasEl) return null;
+
+    try {
+      const productImg = await loadImageElement(productImageSrc);
+      const mockupCanvas = document.createElement('canvas');
+      mockupCanvas.width = MOCKUP_CANVAS_WIDTH;
+      mockupCanvas.height = MOCKUP_CANVAS_HEIGHT;
+      const ctx = mockupCanvas.getContext('2d');
+      if (!ctx) return null;
+
+      const scale = Math.min(MOCKUP_CANVAS_WIDTH / productImg.width, MOCKUP_CANVAS_HEIGHT / productImg.height);
+      const drawWidth = productImg.width * scale;
+      const drawHeight = productImg.height * scale;
+      const offsetX = (MOCKUP_CANVAS_WIDTH - drawWidth) / 2;
+      const offsetY = (MOCKUP_CANVAS_HEIGHT - drawHeight) / 2;
+      ctx.drawImage(productImg, offsetX, offsetY, drawWidth, drawHeight);
+
+      ctx.drawImage(designCanvasEl, 0, 0, MOCKUP_CANVAS_WIDTH, MOCKUP_CANVAS_HEIGHT);
+
+      return mockupCanvas.toDataURL('image/png');
+    } catch {
+      return null;
+    }
+  };
+
+  const serializeCartItem = async () => {
     if (!product || !selectedVariant || !slug) return null;
 
     saveCanvasForSide(printingSide);
@@ -370,6 +408,8 @@ export default function ProductDetail() {
     }
 
     const activeDesignDataUrl = fabricCanvasRef.current?.toDataURL({ format: 'png', multiplier: 1 }) ?? null;
+    const mockupDataUrl = (await captureMockupDataUrl(currentImage)) ?? activeDesignDataUrl;
+
     const isBack = printingSide === 'BACK';
     const customizationData = {
       productSlug: slug,
@@ -391,24 +431,30 @@ export default function ProductDetail() {
       size: selectedSize,
       fit: 'regular',
       customizationData,
-      mockupFrontDataUrl: !isBack ? activeDesignDataUrl : null,
-      mockupBackDataUrl: isBack ? activeDesignDataUrl : null,
+      mockupFrontDataUrl: !isBack ? mockupDataUrl : null,
+      mockupBackDataUrl: isBack ? mockupDataUrl : null,
       designFrontDataUrl: !isBack ? activeDesignDataUrl : null,
       designBackDataUrl: isBack ? activeDesignDataUrl : null,
       createdAt: new Date().toISOString(),
     };
   };
 
-  const handleAddToCart = () => {
-    const item = serializeCartItem();
+  const handleAddToCart = async () => {
+    const item = await serializeCartItem();
     if (!item) return;
 
     cartStore.addItem(item);
     setCartMessage('Added to cart.');
   };
 
-  const handleOrderNow = () => {
-    const item = serializeCartItem();
+  const handleOrderNow = async () => {
+    if (showOrderForm) {
+      // Scroll to the form if it's already shown
+      orderSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    const item = await serializeCartItem();
     if (!item) return;
 
     cartStore.addItem(item);
@@ -668,12 +714,12 @@ export default function ProductDetail() {
               disabled={!selectedVariant}
             >
               <ShoppingBasket size={20} />
-              {t.order}
+              {showOrderForm ? t.confirmOrder || 'Confirm Order' : t.order}
             </button>
             <button
               className="btn-add-cart"
               onClick={handleAddToCart}
-              disabled={!selectedVariant}
+              disabled={!selectedVariant || showOrderForm}
             >
               <ShoppingCart size={20} />
               {t.addToCart}
