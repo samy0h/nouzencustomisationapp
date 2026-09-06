@@ -108,10 +108,17 @@ export default function OrderForm({ onBack }: OrderFormProps) {
     setFieldErrors({});
     try {
       console.log('[OrderForm] Submitting order...');
-      const response = await api.createOrder({ customer, items });
-      console.log('[OrderForm] RAW Response:', JSON.stringify(response, null, 2));
+      console.log('[OrderForm] Customer data:', customer);
+      console.log('[OrderForm] Items:', items);
 
-      const order = response.data?.order || response.order || response.data;
+      const response = await api.createOrder({ customer, items });
+
+      console.log('[OrderForm] Response received!');
+      console.log('[OrderForm] Response type:', typeof response);
+      console.log('[OrderForm] Response keys:', Object.keys(response || {}));
+      console.log('[OrderForm] RAW Response:', response);
+
+      const order = (response.data as any)?.order || (response as any).order || response.data;
       console.log('[OrderForm] Extracted order:', order);
 
       if (!order || !order.orderNumber) {
@@ -135,7 +142,9 @@ export default function OrderForm({ onBack }: OrderFormProps) {
       navigate(redirectUrl, { replace: true });
       console.log('[OrderForm] Navigate called');
     } catch (submitError) {
-      console.error('[OrderForm] Submit error:', submitError);
+      console.error('[OrderForm] CATCH ERROR:', submitError);
+      console.error('[OrderForm] Error message:', submitError instanceof Error ? submitError.message : submitError);
+      console.error('[OrderForm] Error stack:', submitError instanceof Error ? submitError.stack : 'No stack');
       setError(submitError instanceof Error ? submitError.message : t.orderSubmitError);
     } finally {
       setSubmitting(false);
