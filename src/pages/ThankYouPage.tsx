@@ -55,7 +55,7 @@ export default function ThankYouPage() {
 
         <div className="contact-info">
           <p className="contact-text">
-            Des questions? Contactez-nous: <a href="tel:+213XXXXXXXXX">+213 XXX XXX XXX</a>
+            Des questions? Contactez-nous: <a href="tel:+213660617267">0660 617 267</a>
           </p>
         </div>
       </div>

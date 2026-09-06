@@ -113,6 +113,19 @@ export default function OrderForm({ onBack }: OrderFormProps) {
 
       const response = await api.createOrder({ customer, items });
 
+      console.log('[DEBUG-1] After await, before any processing');
+      console.log('[DEBUG-2] Response exists:', !!response);
+      console.log('[DEBUG-3] Response type:', typeof response);
+
+      try {
+        console.log('[DEBUG-4] About to call Object.keys');
+        const keys = Object.keys(response || {});
+        console.log('[DEBUG-5] Keys obtained:', keys);
+      } catch (e) {
+        console.error('[DEBUG-ERROR] Object.keys failed:', e);
+      }
+
+      console.log('[DEBUG-6] About to log response');
       console.log('[OrderForm] Response received!');
       console.log('[OrderForm] Response type:', typeof response);
       console.log('[OrderForm] Response keys:', Object.keys(response || {}));
