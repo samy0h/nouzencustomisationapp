@@ -49,6 +49,7 @@ export default function AdminProductEditor() {
   const [productPrice, setProductPrice] = useState("");
   const [productType, setProductType] = useState("OTHER");
   const [productCategoryId, setProductCategoryId] = useState("");
+  const [supportsDoublePrint, setSupportsDoublePrint] = useState(false);
   const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
   const [productTypes, setProductTypes] = useState<Array<{ id: string; name: string }>>([]);
   const [coverPhoto, setCoverPhoto] = useState("");
@@ -115,6 +116,7 @@ export default function AdminProductEditor() {
       setProductPrice(String(loaded.price));
       setProductType(loaded.type);
       setProductCategoryId(loaded.categoryId);
+      setSupportsDoublePrint(loaded.supportsDoublePrint);
       setDescription(loaded.description || "");
       setSizeChartImage(loaded.sizeChartImage || "");
       setCoverPhoto(loaded.images?.[0] || "");
@@ -253,6 +255,7 @@ export default function AdminProductEditor() {
         price: Number(productPrice),
         categoryId: productCategoryId,
         type: productType,
+        supportsDoublePrint: supportsDoublePrint,
         images: coverPhoto ? [coverPhoto] : [],
         variants: [{ color: newColor, colorHex: newColorHex, sizes: newColorSizes }]
       });
@@ -485,6 +488,14 @@ export default function AdminProductEditor() {
                     </option>
                   ))}
                 </select>
+              </label>
+              <label className="admin-checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={supportsDoublePrint}
+                  onChange={(e) => setSupportsDoublePrint(e.target.checked)}
+                />
+                <span>Supports Double-Sided Printing (Front & Back)</span>
               </label>
               <label className="admin-description-field">
                 Cover photo (catalog thumbnail)
