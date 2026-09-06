@@ -898,16 +898,26 @@ export default function AdminProductEditor() {
                       );
                       const colorVariants = product?.variants.filter((v) => v.color === colorName) || [];
                       const colorHex = colorVariants[0]?.colorHex || '#cccccc';
+                      const isSelected = color === colorName;
 
                       return (
-                        <div key={colorName} className="color-card">
-                          <div className="color-card-header">
+                        <div key={colorName} className={`color-card ${isSelected ? 'selected' : ''}`}>
+                          <div
+                            className="color-card-header"
+                            onClick={() => {
+                              setColor(colorName);
+                              setMessage(`Now editing: ${colorName}`);
+                              // Scroll to the top section smoothly
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                          >
                             <div className="color-swatch" style={{ backgroundColor: colorHex }}></div>
-                            <span className="color-name">{colorName}</span>
+                            <span className="color-name">{colorName} {isSelected && '(editing)'}</span>
                             <button
                               type="button"
                               className="color-delete-btn"
-                              onClick={async () => {
+                              onClick={async (e) => {
+                                e.stopPropagation(); // Prevent triggering color selection
                                 if (!window.confirm(`Remove "${colorName}" and all its variants?`)) return;
                                 try {
                                   await api.deleteAdminProductColor(product!.id, colorName);

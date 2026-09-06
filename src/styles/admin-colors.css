@@ -28,12 +28,23 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  transition: all 0.2s;
+}
+
+.color-card.selected {
+  border-color: #a00223;
+  box-shadow: 0 0 0 2px rgba(160, 2, 35, 0.1);
 }
 
 .color-card-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  cursor: pointer;
+}
+
+.color-card-header:hover .color-name {
+  color: #a00223;
 }
 
 .color-delete-btn {
@@ -71,6 +82,9 @@
 .color-name {
   font-weight: 600;
   font-size: 0.9rem;
+  flex: 1;
+  user-select: none;
+  transition: color 0.2s;
 }
 
 .color-images {
