@@ -10,9 +10,11 @@ import AdminProductEditor from './pages/AdminProductEditor';
 import AdminSettings from './pages/AdminSettings';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import OrderConfirmation from './pages/OrderConfirmation';
 import AdminOrders from './pages/AdminOrders';
 import AdminOrderDetail from './pages/AdminOrderDetail';
 import AdminDashboard from './pages/AdminDashboard';
+import ThankYouPage from './pages/ThankYouPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import './styles/catalog.css';
 
@@ -28,6 +30,8 @@ function App() {
             <Route path="/custom/product/:slug/customize" element={<Customizer />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="/thank-you" element={<ThankYouPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<ProtectedRoute><AdminProducts /></ProtectedRoute>} />
             <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />

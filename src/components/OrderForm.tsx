@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { CheckCircle2, Loader2, Minus, Plus, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Loader2, Minus, Plus, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import { api } from '../services/api';
 import { useCart } from '../stores/cartStore';
-import type { ApiOrder, CheckoutCustomer } from '../types';
+import type { CheckoutCustomer } from '../types';
 import { WILAYAS, getDeliveryCost } from '../data/deliveryRates';
 import '../styles/orders.css';
 
@@ -22,6 +22,7 @@ const isValidUuid = (value: unknown): value is string => {
 
 export default function OrderForm({ onBack }: OrderFormProps) {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const { items, subtotal, updateQuantity, removeItem, clear } = useCart();
   const [customer, setCustomer] = useState<CheckoutCustomer>({
     customerName: '',
@@ -34,7 +35,6 @@ export default function OrderForm({ onBack }: OrderFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [confirmedOrder, setConfirmedOrder] = useState<ApiOrder | null>(null);
 
   const deliveryCost = getDeliveryCost(customer.wilaya, customer.deliveryMethod) ?? 0;
   const total = subtotal + deliveryCost;
@@ -111,13 +111,10 @@ export default function OrderForm({ onBack }: OrderFormProps) {
       const response = await api.createOrder({ customer, items });
       console.log('[OrderForm] Order created:', response.data.order);
 
-      // Set confirmed order FIRST before clearing cart
-      setConfirmedOrder(response.data.order);
+      clear();
 
-      // Clear cart after a delay to allow confirmation to render
-      setTimeout(() => {
-        clear();
-      }, 100);
+      // Redirect to the dedicated thank-you page with the order data
+      navigate(`/thank-you?order=${response.data.order.orderNumber}&total=${response.data.order.total}`, { replace: true });
     } catch (submitError) {
       console.error('[OrderForm] Submit error:', submitError);
       setError(submitError instanceof Error ? submitError.message : t.orderSubmitError);
@@ -125,20 +122,6 @@ export default function OrderForm({ onBack }: OrderFormProps) {
       setSubmitting(false);
     }
   };
-
-  if (confirmedOrder) {
-    return (
-      <div className="confirmation">
-        <CheckCircle2 size={44} />
-        <span className="order-eyebrow">{t.orderConfirmed}</span>
-        <h1>#{confirmedOrder.orderNumber}</h1>
-        <p>{t.total}: {formatDzd(confirmedOrder.total)}</p>
-        <p>{t.paymentMethod}: {t.cashOnDelivery}</p>
-        <p>{t.orderFollowUp}</p>
-        <Link className="order-primary-link" to="/catalog">{t.backToCatalog}</Link>
-      </div>
-    );
-  }
 
   return (
     <section className="order-form-section">

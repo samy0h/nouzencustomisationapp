@@ -94,6 +94,14 @@
   letter-spacing: 0;
 }
 
+.confirmation-order-id {
+  margin: 0.25rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.04em;
+}
+
 .order-back,
 .order-secondary,
 .order-primary-link {

@@ -143,16 +143,8 @@ export default function ProductDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableSizes]);
 
-  // Reset order form when cart becomes empty (but not immediately to allow confirmation to show)
-  useEffect(() => {
-    if (itemCount === 0 && showOrderForm) {
-      // Don't close immediately - OrderForm needs time to show confirmation
-      const timer = setTimeout(() => {
-        setShowOrderForm(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [itemCount, showOrderForm]);
+  // Keep the confirmation page visible: the order form is only closed
+  // when the user explicitly starts a new order (see handleOrderNow).
 
   // Initialize Fabric.js canvas
   useEffect(() => {

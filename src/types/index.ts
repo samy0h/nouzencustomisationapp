@@ -179,6 +179,7 @@ export interface Translation {
   emptyCart: string;
   continueCustomizing: string;
   orderConfirmed: string;
+  thankYou: string;
   orderFollowUp: string;
   orderSubmitError: string;
   language: string;

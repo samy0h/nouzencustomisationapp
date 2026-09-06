@@ -1,0 +1,143 @@
+.thankyou-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem;
+}
+
+.thankyou-container {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.thankyou-icon {
+  color: #22c55e;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.thankyou-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+}
+
+.order-details {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.order-number {
+  font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.order-number strong {
+  color: #1a1a1a;
+  font-size: 1.25rem;
+}
+
+.order-total {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.order-total strong {
+  color: #059669;
+  font-size: 1.125rem;
+}
+
+.thankyou-message {
+  margin-bottom: 2rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.thankyou-message p {
+  margin-bottom: 1rem;
+}
+
+.thankyou-actions {
+  margin-bottom: 2rem;
+}
+
+.btn-primary {
+  display: inline-block;
+  background: #1a1a1a;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.contact-info {
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.contact-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.contact-text a {
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-text a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .thankyou-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .thankyou-title {
+    font-size: 1.5rem;
+  }
+
+  .thankyou-icon {
+    margin-bottom: 1rem;
+  }
+
+  .thankyou-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+}
