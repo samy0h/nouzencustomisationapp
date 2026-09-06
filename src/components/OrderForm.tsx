@@ -109,7 +109,16 @@ export default function OrderForm({ onBack }: OrderFormProps) {
     try {
       console.log('[OrderForm] Submitting order...');
       const response = await api.createOrder({ customer, items });
-      console.log('[OrderForm] Order created:', response.data.order);
+      console.log('[OrderForm] Order created:', response);
+      console.log('[OrderForm] Response data:', response.data);
+      console.log('[OrderForm] Order object:', response.data?.order);
+
+      if (!response.data?.order) {
+        console.error('[OrderForm] ERROR: No order object in response!');
+        setError('Order was created but response is invalid');
+        return;
+      }
+
       console.log('[OrderForm] Order number:', response.data.order.orderNumber);
       console.log('[OrderForm] Order total:', response.data.order.total);
 
