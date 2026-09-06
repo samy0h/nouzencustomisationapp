@@ -176,7 +176,6 @@ export default function OrderForm({ onBack }: OrderFormProps) {
                 required
                 value={customer.customerName}
                 onChange={event => setCustomer({ ...customer, customerName: event.target.value })}
-                pattern="[\p{L}\s'-]+"
                 title="Name can only contain letters, spaces, hyphens and apostrophes"
               />
               {fieldErrors.customerName && <span className="field-error">{fieldErrors.customerName}</span>}
@@ -187,7 +186,6 @@ export default function OrderForm({ onBack }: OrderFormProps) {
                 required
                 value={customer.phone}
                 onChange={event => setCustomer({ ...customer, phone: event.target.value })}
-                pattern="0\d{9}"
                 title="Phone must start with 0 and have exactly 10 digits"
                 maxLength={10}
               />
