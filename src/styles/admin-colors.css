@@ -36,6 +36,30 @@
   gap: 0.5rem;
 }
 
+.color-delete-btn {
+  margin-left: auto;
+  background: #fff0f0;
+  color: #a00223;
+  border: 1px solid #ffcccc;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.color-delete-btn:hover {
+  background: #a00223;
+  color: white;
+  border-color: #a00223;
+}
+
 .color-swatch {
   width: 24px;
   height: 24px;

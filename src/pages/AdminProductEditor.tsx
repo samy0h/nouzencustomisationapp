@@ -904,6 +904,26 @@ export default function AdminProductEditor() {
                           <div className="color-card-header">
                             <div className="color-swatch" style={{ backgroundColor: colorHex }}></div>
                             <span className="color-name">{colorName}</span>
+                            <button
+                              type="button"
+                              className="color-delete-btn"
+                              onClick={async () => {
+                                if (!window.confirm(`Remove "${colorName}" and all its variants?`)) return;
+                                try {
+                                  await api.deleteAdminProductColor(product!.id, colorName);
+                                  await loadProduct();
+                                  setMessage(`Color "${colorName}" removed successfully.`);
+                                  if (color === colorName) {
+                                    setColor(colors.find(c => c !== colorName) || '');
+                                  }
+                                } catch (error) {
+                                  setMessage(error instanceof Error ? error.message : 'Could not remove color.');
+                                }
+                              }}
+                              title={`Remove ${colorName}`}
+                            >
+                              ×
+                            </button>
                           </div>
                           <div className="color-images">
                             <div className="color-image-item">
