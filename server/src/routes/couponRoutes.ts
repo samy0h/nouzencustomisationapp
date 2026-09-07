@@ -1,8 +1,11 @@
 import { Router } from 'express';
-import { prisma } from '../prisma.js';
+import { prisma } from '../index.js';
 import { requireAdmin } from '../middleware/adminAuth.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
 import type { Request, Response } from 'express';
+
+const asyncHandler = (fn: Function) => (req: Request, res: Response, next: Function) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
 
 const router = Router();
 
