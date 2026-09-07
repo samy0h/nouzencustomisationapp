@@ -633,7 +633,7 @@ export default function ProductDetail() {
               {product.name} <span className="customized-label">{t.customizedProduct}</span>
             </h1>
             <p className="product-meta">
-              {product.category.name} · {product.description?.substring(0, 30) || 'Détail'}
+              {product.category.name} · {product.description || 'Détail'}
             </p>
             {product.sizeChartImage && (
               <img
