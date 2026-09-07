@@ -123,6 +123,7 @@ export default function AdminProductEditor() {
       setProductName(loaded.name);
       setProductSlug(loaded.slug);
       setProductPrice(String(loaded.price));
+      setProductDiscount(String(loaded.discountPercentage || 0));
       setProductType(loaded.type);
       setProductCategoryId(loaded.categoryId);
       setSupportsDoublePrint(loaded.supportsDoublePrint);
@@ -320,6 +321,7 @@ export default function AdminProductEditor() {
       description,
       sizeChartImage,
       price: Number(productPrice),
+      discountPercentage: Number(productDiscount) || 0,
       type: productType,
       categoryId: productCategoryId,
       supportsDoublePrint: product.supportsDoublePrint,
