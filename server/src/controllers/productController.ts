@@ -315,8 +315,8 @@ export const createAdminProduct = asyncHandler(async (req: Request, res: Respons
 });
 
 export const updateAdminProduct = asyncHandler(async (req: Request, res: Response) => {
-  const { name, slug, description, sizeChartImage, price, type, categoryId, supportsDoublePrint, images } = req.body as {
-    name?: string; slug?: string; description?: string | null; sizeChartImage?: string | null; price?: number; type?: string;
+  const { name, slug, description, sizeChartImage, price, discountPercentage, type, categoryId, supportsDoublePrint, images } = req.body as {
+    name?: string; slug?: string; description?: string | null; sizeChartImage?: string | null; price?: number; discountPercentage?: number; type?: string;
     categoryId?: string; supportsDoublePrint?: boolean; images?: string[];
   };
   if (!name?.trim() || !slug?.trim() || typeof price !== 'number' || price < 0 || !categoryId) {
@@ -331,6 +331,7 @@ export const updateAdminProduct = asyncHandler(async (req: Request, res: Respons
       description: description?.trim() || null,
       sizeChartImage: sizeChartImage || null,
       price,
+      ...(discountPercentage !== undefined && { discountPercentage }),
       type: type as any,
       categoryId,
       supportsDoublePrint: Boolean(supportsDoublePrint),
