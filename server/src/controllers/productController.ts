@@ -218,6 +218,62 @@ export const deleteAdminProductColor = asyncHandler(async (req: Request, res: Re
   res.json({ status: 'success', message: 'Color removed' });
 });
 
+export const updateAdminProductVariantSizes = asyncHandler(async (req: Request, res: Response) => {
+  const productId = String(req.params.id);
+  const color = String(req.params.color);
+  const { sizes } = req.body as { sizes?: string[] };
+
+  if (!sizes || !Array.isArray(sizes) || sizes.length === 0) {
+    throw new AppError('At least one size is required', 400);
+  }
+
+  // Find existing variants for this color
+  const existingVariants = await prisma.productVariant.findMany({
+    where: { productId, color: { equals: color, mode: 'insensitive' } }
+  });
+
+  if (!existingVariants.length) {
+    throw new AppError('Color not found', 404);
+  }
+
+  const colorHex = existingVariants[0].colorHex;
+  const existingSizes = existingVariants.map(v => v.size);
+
+  // Sizes to add (in new list but not in existing)
+  const sizesToAdd = sizes.filter(size => !existingSizes.includes(size));
+
+  // Sizes to remove (in existing but not in new list)
+  const sizesToRemove = existingSizes.filter(size => !sizes.includes(size));
+
+  await prisma.$transaction([
+    // Delete removed sizes
+    ...(sizesToRemove.length > 0 ? [
+      prisma.productVariant.deleteMany({
+        where: {
+          productId,
+          color: { equals: color, mode: 'insensitive' },
+          size: { in: sizesToRemove }
+        }
+      })
+    ] : []),
+    // Add new sizes
+    ...(sizesToAdd.length > 0 ? [
+      prisma.productVariant.createMany({
+        data: sizesToAdd.map(size => ({
+          productId,
+          color,
+          colorHex,
+          size,
+          stock: 0,
+          available: true
+        }))
+      })
+    ] : [])
+  ]);
+
+  res.json({ status: 'success', message: 'Sizes updated successfully' });
+});
+
 export const createAdminProduct = asyncHandler(async (req: Request, res: Response) => {
   const { name, slug, description, sizeChartImage, price, type = 'OTHER', categoryId, supportsDoublePrint = false, variants = [], images = [] } = req.body as {
     name?: string; slug?: string; price?: number; type?: string; categoryId?: string;
