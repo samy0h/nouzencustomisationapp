@@ -48,6 +48,25 @@ export default function AdminProductEditor() {
   const [productSlug, setProductSlug] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [productDiscount, setProductDiscount] = useState("0");
+  const [discountedPrice, setDiscountedPrice] = useState("");
+  // Handle discount percentage change - recalculate discounted price
+  const handleDiscountChange = (value: string) => {
+    setProductDiscount(value);
+    if (productPrice && value) {
+      const finalPrice = Number(productPrice) * (1 - Number(value) / 100);
+      setDiscountedPrice(finalPrice.toFixed(0));
+    }
+  };
+
+  // Handle discounted price change - recalculate discount percentage
+  const handleDiscountedPriceChange = (value: string) => {
+    setDiscountedPrice(value);
+    if (productPrice && value) {
+      const discountPercent = ((Number(productPrice) - Number(value)) / Number(productPrice)) * 100;
+      setProductDiscount(Math.max(0, Math.min(100, discountPercent)).toFixed(0));
+    }
+  };
+
   const [productType, setProductType] = useState("OTHER");
   const [productCategoryId, setProductCategoryId] = useState("");
   const [supportsDoublePrint, setSupportsDoublePrint] = useState(false);
@@ -480,18 +499,20 @@ export default function AdminProductEditor() {
                   min="0"
                   max="100"
                   value={productDiscount}
-                  onChange={(event) => setProductDiscount(event.target.value)}
+                  onChange={(event) => handleDiscountChange(event.target.value)}
                   placeholder="0"
                 />
               </label>
               <label>
                 Discounted Price
                 <input
-                  type="text"
-                  value={productPrice && productDiscount && Number(productDiscount) > 0
-                    ? `${(Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)} DZD`
-                    : `${productPrice || 0} DZD`}
-                  readOnly
+                  type="number"
+                  min="0"
+                  value={discountedPrice || (productPrice && productDiscount
+                    ? (Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)
+                    : productPrice || '')}
+                  onChange={(event) => handleDiscountedPriceChange(event.target.value)}
+                  placeholder="Final price"
                   className="discount-preview-input"
                 />
               </label>
