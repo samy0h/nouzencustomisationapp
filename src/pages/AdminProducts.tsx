@@ -52,7 +52,36 @@ export default function AdminProducts() {
           {products.map(product => (
             <Link className="admin-product-card" key={product.id} to={`/admin/products/${product.id}`}>
               <div className="admin-product-thumb"><img src={product.images[0]} alt="" /></div>
-              <div><h2>{product.name}</h2><p>{product.variants.length} variants</p></div>
+              <div>
+                <h2>{product.name}</h2>
+                <p>{product.variants.length} variants</p>
+                <label className="product-double-print-toggle" onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={product.supportsDoublePrint}
+                    onChange={async (e) => {
+                      e.stopPropagation();
+                      try {
+                        await api.updateAdminProduct(product.id, {
+                          name: product.name,
+                          slug: product.slug,
+                          description: product.description,
+                          sizeChartImage: product.sizeChartImage,
+                          price: product.price,
+                          type: product.type,
+                          categoryId: product.categoryId,
+                          supportsDoublePrint: e.target.checked,
+                          images: product.images
+                        });
+                        loadProducts();
+                      } catch (error) {
+                        alert(error instanceof Error ? error.message : 'Could not update product');
+                      }
+                    }}
+                  />
+                  <span>Front & Back</span>
+                </label>
+              </div>
               <button className="admin-card-delete" onClick={event => archiveProduct(event, product.id)} aria-label={`Archive ${product.name}`}>x</button>
               <span>-&gt;</span>
             </Link>

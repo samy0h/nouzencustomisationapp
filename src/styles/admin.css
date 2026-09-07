@@ -160,3 +160,22 @@
   cursor: pointer;
 }
 @media (max-width: 900px) { .admin-filters, .admin-order-grid, .admin-order-item, .admin-dashboard-grid { grid-template-columns: 1fr; } }
+
+.product-double-print-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  cursor: pointer;
+  user-select: none;
+  margin-top: 0.25rem;
+}
+.product-double-print-toggle input[type="checkbox"] {
+  cursor: pointer;
+  width: auto;
+  margin: 0;
+}
+.product-double-print-toggle span {
+  font-weight: 500;
+}
