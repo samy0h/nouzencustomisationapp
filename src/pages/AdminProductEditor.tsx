@@ -143,6 +143,13 @@ export default function AdminProductEditor() {
       setProductSlug(loaded.slug);
       setProductPrice(String(loaded.price));
       setProductDiscount(String(loaded.discountPercentage || 0));
+      // Calculate discounted price on load
+      if (loaded.discountPercentage > 0) {
+        const finalPrice = loaded.price * (1 - loaded.discountPercentage / 100);
+        setDiscountedPrice(finalPrice.toFixed(0));
+      } else {
+        setDiscountedPrice('');
+      }
       setProductType(loaded.type);
       setProductCategoryId(loaded.categoryId);
       setSupportsDoublePrint(loaded.supportsDoublePrint);
