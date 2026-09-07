@@ -24,6 +24,7 @@ export function transformApiProduct(apiProduct: ApiProduct): Product {
     category: apiProduct.category.name,
     categorySlug: apiProduct.category.slug,
     price: apiProduct.price,
+    discountPercentage: apiProduct.discountPercentage || 0,
     oldPrice,
     badge,
     image,
