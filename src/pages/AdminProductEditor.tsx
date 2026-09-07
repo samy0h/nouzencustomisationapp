@@ -812,7 +812,7 @@ export default function AdminProductEditor() {
                 min="0"
                 max="100"
                 value={productDiscount}
-                onChange={(event) => setProductDiscount(event.target.value)}
+                onChange={(event) => handleDiscountChange(event.target.value)}
                 placeholder="0"
               />
             </label>
