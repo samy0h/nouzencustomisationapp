@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { prisma } from '../db.js';
+import { prisma } from '../prisma.js';
 import { requireAdmin } from '../middleware/adminAuth.js';
-import { asyncHandler } from '../middleware/asyncHandler.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 import type { Request, Response } from 'express';
 
 const router = Router();
 
 // Get all coupons (admin only)
-router.get('/', requireAdmin, asyncHandler(async (req: Request, res: Response) => {
+router.get('/', requireAdmin, asyncHandler(async (_req: Request, res: Response) => {
   const coupons = await prisma.coupon.findMany({ orderBy: { createdAt: 'desc' } });
   res.json({ status: 'success', data: { coupons } });
 }));
@@ -17,7 +17,8 @@ router.post('/', requireAdmin, asyncHandler(async (req: Request, res: Response) 
   const { code, discountPercent } = req.body;
 
   if (!code || !discountPercent) {
-    return res.status(400).json({ status: 'error', message: 'Code and discount percent are required' });
+    res.status(400).json({ status: 'error', message: 'Code and discount percent are required' });
+    return;
   }
 
   const coupon = await prisma.coupon.create({
@@ -35,7 +36,8 @@ router.post('/validate', asyncHandler(async (req: Request, res: Response) => {
   const { code } = req.body;
 
   if (!code) {
-    return res.status(400).json({ status: 'error', message: 'Code is required' });
+    res.status(400).json({ status: 'error', message: 'Code is required' });
+    return;
   }
 
   const coupon = await prisma.coupon.findUnique({
@@ -43,7 +45,8 @@ router.post('/validate', asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (!coupon) {
-    return res.status(404).json({ status: 'error', message: 'Invalid or expired coupon code' });
+    res.status(404).json({ status: 'error', message: 'Invalid or expired coupon code' });
+    return;
   }
 
   res.json({ status: 'success', data: { coupon } });
