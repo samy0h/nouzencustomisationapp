@@ -24,6 +24,7 @@ export interface ApiProduct {
   description: string | null;
   sizeChartImage?: string | null;
   price: number;
+  discountPercentage: number;
   images: string[];
   active: boolean;
   featured: boolean;
