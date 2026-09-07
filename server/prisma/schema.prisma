@@ -35,6 +35,7 @@ model Product {
   description         String?
   sizeChartImage      String?
   price               Float
+  discountPercentage  Int              @default(0)
   images              String[]
   active              Boolean          @default(true)
   featured            Boolean          @default(false)
