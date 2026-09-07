@@ -483,11 +483,17 @@ export default function AdminProductEditor() {
                   onChange={(event) => setProductDiscount(event.target.value)}
                   placeholder="0"
                 />
-                {productPrice && productDiscount && Number(productDiscount) > 0 && (
-                  <span className="discount-preview">
-                    Final: {(Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)} DZD
-                  </span>
-                )}
+              </label>
+              <label>
+                Discounted Price
+                <input
+                  type="text"
+                  value={productPrice && productDiscount && Number(productDiscount) > 0
+                    ? `${(Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)} DZD`
+                    : `${productPrice || 0} DZD`}
+                  readOnly
+                  className="discount-preview-input"
+                />
               </label>
               <label>
                 Category
@@ -781,11 +787,17 @@ export default function AdminProductEditor() {
                 onChange={(event) => setProductDiscount(event.target.value)}
                 placeholder="0"
               />
-              {productPrice && productDiscount && Number(productDiscount) > 0 && (
-                <span className="discount-preview">
-                  Final: {(Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)} DZD
-                </span>
-              )}
+            </label>
+            <label>
+              Discounted Price
+              <input
+                type="text"
+                value={productPrice && productDiscount && Number(productDiscount) > 0
+                  ? `${(Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)} DZD`
+                  : `${productPrice || 0} DZD`}
+                readOnly
+                className="discount-preview-input"
+              />
             </label>
             <label>
               Category
