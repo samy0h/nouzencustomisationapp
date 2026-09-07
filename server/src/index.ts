@@ -54,6 +54,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/product-types', productTypeRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/coupons', couponRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
