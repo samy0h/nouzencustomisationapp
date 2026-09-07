@@ -6,6 +6,7 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import productTypeRoutes from './routes/productTypeRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import couponRoutes from './routes/couponRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
