@@ -819,12 +819,14 @@ export default function AdminProductEditor() {
             <label>
               Discounted Price
               <input
-                type="text"
-                value={productPrice && productDiscount && Number(productDiscount) > 0
-                  ? `${(Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)} DZD`
-                  : `${productPrice || 0} DZD`}
-                readOnly
-                className="discount-preview-input"
+                type="number"
+                min="0"
+                step="1"
+                value={discountedPrice || (productPrice && productDiscount && Number(productDiscount) > 0
+                  ? (Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)
+                  : productPrice || '')}
+                onChange={(event) => handleDiscountedPriceChange(event.target.value)}
+                placeholder="Final price"
               />
             </label>
             <label>
