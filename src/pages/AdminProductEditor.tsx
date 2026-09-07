@@ -47,6 +47,7 @@ export default function AdminProductEditor() {
   const [productName, setProductName] = useState("");
   const [productSlug, setProductSlug] = useState("");
   const [productPrice, setProductPrice] = useState("");
+  const [productDiscount, setProductDiscount] = useState("0");
   const [productType, setProductType] = useState("OTHER");
   const [productCategoryId, setProductCategoryId] = useState("");
   const [supportsDoublePrint, setSupportsDoublePrint] = useState(false);
@@ -261,6 +262,7 @@ export default function AdminProductEditor() {
         slug: productSlug,
         description,
         price: Number(productPrice),
+        discountPercentage: Number(productDiscount) || 0,
         categoryId: productCategoryId,
         type: productType,
         supportsDoublePrint: supportsDoublePrint,
@@ -468,6 +470,22 @@ export default function AdminProductEditor() {
                   onChange={(event) => setProductPrice(event.target.value)}
                   placeholder="2500"
                 />
+              </label>
+              <label>
+                Discount %
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={productDiscount}
+                  onChange={(event) => setProductDiscount(event.target.value)}
+                  placeholder="0"
+                />
+                {productPrice && productDiscount && Number(productDiscount) > 0 && (
+                  <span className="discount-preview">
+                    Final: {(Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)} DZD
+                  </span>
+                )}
               </label>
               <label>
                 Category

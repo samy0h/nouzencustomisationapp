@@ -179,3 +179,10 @@
 .product-double-print-toggle span {
   font-weight: 500;
 }
+.discount-preview {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #16a34a;
+  font-weight: 600;
+}
