@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { prisma } from '../index.js';
+import { prisma } from '../utils/prisma.js';
 import { requireAdmin } from '../middleware/adminAuth.js';
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
-const asyncHandler = (fn: Function) => (req: Request, res: Response, next: Function) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
 
 const router = Router();
 
