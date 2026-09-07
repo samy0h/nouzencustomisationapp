@@ -134,7 +134,7 @@
 .preview-card {
   background: white;
   border-radius: 20px;
-  padding: 3.5rem;
+  padding: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e5e5;
 }
@@ -183,7 +183,7 @@
 
 .product-stage {
   position: relative;
-  width: min(100%, 380px);
+  width: min(100%, 550px);
   aspect-ratio: 4 / 5;
   overflow: hidden;
   background: #fafafa;
