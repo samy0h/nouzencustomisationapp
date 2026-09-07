@@ -58,7 +58,8 @@ router.post('/validate', asyncHandler(async (req: Request, res: Response) => {
 
 // Delete coupon (admin only)
 router.delete('/:id', requireAdmin, asyncHandler(async (req: Request, res: Response) => {
-  await prisma.coupon.delete({ where: { id: req.params.id } });
+  const id = String(req.params.id);
+  await prisma.coupon.delete({ where: { id } });
   res.json({ status: 'success', message: 'Coupon deleted' });
 }));
 
