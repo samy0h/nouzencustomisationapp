@@ -772,6 +772,22 @@ export default function AdminProductEditor() {
               />
             </label>
             <label>
+              Discount %
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={productDiscount}
+                onChange={(event) => setProductDiscount(event.target.value)}
+                placeholder="0"
+              />
+              {productPrice && productDiscount && Number(productDiscount) > 0 && (
+                <span className="discount-preview">
+                  Final: {(Number(productPrice) * (1 - Number(productDiscount) / 100)).toFixed(0)} DZD
+                </span>
+              )}
+            </label>
+            <label>
               Category
               <select
                 value={productCategoryId}
