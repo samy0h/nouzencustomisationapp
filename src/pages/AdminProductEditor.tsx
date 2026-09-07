@@ -138,6 +138,8 @@ export default function AdminProductEditor() {
   const loadProduct = () =>
     api.getAdminProduct(id!).then((response) => {
       const loaded = response.data.product;
+      console.log('[LOAD] Product loaded from API:', loaded);
+      console.log('[LOAD] Discount from API:', loaded.discountPercentage);
       setProduct(loaded);
       setProductName(loaded.name);
       setProductSlug(loaded.slug);
