@@ -330,6 +330,7 @@ export default function AdminProductEditor() {
 
   const save = async () => {
     if (!product || !color) return;
+    console.log('[SAVE] Starting save with discount:', productDiscount);
     const images = product.productImages
       .filter((image) => !(image.color === color && image.side === side))
       .map((image) => ({
@@ -341,7 +342,8 @@ export default function AdminProductEditor() {
       }));
     if (imageUrl)
       images.push({ color, side, url: imageUrl, fileName, variantIds });
-    await api.updateAdminProduct(product.id, {
+
+    const updateData = {
       name: productName,
       slug: productSlug,
       description,
@@ -352,7 +354,10 @@ export default function AdminProductEditor() {
       categoryId: productCategoryId,
       supportsDoublePrint: product.supportsDoublePrint,
       images: coverPhoto ? [coverPhoto] : [],
-    });
+    };
+    console.log('[SAVE] Sending update data:', updateData);
+
+    await api.updateAdminProduct(product.id, updateData);
     await api.saveAdminProductDesign(product.id, {
       images,
       printAreas: (["FRONT", "BACK"] as Side[]).map((currentSide) => ({
