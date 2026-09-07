@@ -225,22 +225,37 @@ export const createAdminProduct = asyncHandler(async (req: Request, res: Respons
     supportsDoublePrint?: boolean; variants?: Array<{ color: string; colorHex: string; sizes: string[] }>;
     images?: string[];
   };
+
+  console.log('[CREATE PRODUCT] Received payload:', { name, slug, price, type, categoryId, supportsDoublePrint, variantsCount: variants.length, imagesCount: images.length });
+
   if (!name?.trim() || !slug?.trim() || typeof price !== 'number' || price < 0 || !categoryId || !variants.length) {
     throw new AppError('Name, slug, price, category, and at least one color are required', 400);
   }
 
-  const product = await prisma.product.create({
-    data: {
-      name: name.trim(), slug: slug.trim().toLowerCase(), price, type: type as any,
-      description: description?.trim() || null,
-      sizeChartImage: sizeChartImage || null,
-      categoryId, supportsDoublePrint,
-      images: images || [],
-      variants: { create: variants.flatMap(variant => variant.sizes.map(size => ({ color: variant.color, colorHex: variant.colorHex, size, stock: 0, available: true }))) },
-    },
-    include: { variants: true },
-  });
-  res.status(201).json({ status: 'success', data: { product } });
+  try {
+    const product = await prisma.product.create({
+      data: {
+        name: name.trim(), slug: slug.trim().toLowerCase(), price, type: type as any,
+        description: description?.trim() || null,
+        sizeChartImage: sizeChartImage || null,
+        categoryId, supportsDoublePrint,
+        images: images || [],
+        variants: { create: variants.flatMap(variant => variant.sizes.map(size => ({ color: variant.color, colorHex: variant.colorHex, size, stock: 0, available: true }))) },
+      },
+      include: { variants: true },
+    });
+    console.log('[CREATE PRODUCT] Product created successfully:', product.id);
+    res.status(201).json({ status: 'success', data: { product } });
+  } catch (error: any) {
+    console.error('[CREATE PRODUCT] Database error:', error.message, error.code);
+    if (error.code === 'P2002') {
+      throw new AppError('A product with this slug already exists', 409);
+    }
+    if (error.code === 'P2003') {
+      throw new AppError('Invalid category ID - category does not exist', 400);
+    }
+    throw error;
+  }
 });
 
 export const updateAdminProduct = asyncHandler(async (req: Request, res: Response) => {
