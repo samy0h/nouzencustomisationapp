@@ -85,6 +85,7 @@ export interface Product {
   category: string;
   categorySlug: string;
   price: number;
+  discountPercentage: number;
   oldPrice: number | null;
   badge: string | null;
   image: string;
