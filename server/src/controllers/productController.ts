@@ -331,7 +331,7 @@ export const updateAdminProduct = asyncHandler(async (req: Request, res: Respons
       description: description?.trim() || null,
       sizeChartImage: sizeChartImage || null,
       price,
-      ...(discountPercentage !== undefined && { discountPercentage }),
+      discountPercentage: discountPercentage ?? 0,
       type: type as any,
       categoryId,
       supportsDoublePrint: Boolean(supportsDoublePrint),
