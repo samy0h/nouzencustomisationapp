@@ -1,0 +1,40 @@
+/* Discount Badge */
+.discount-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #ef4444;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Product Pricing */
+.product-pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+.discounted-price {
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.product-price {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #1f2937;
+}
