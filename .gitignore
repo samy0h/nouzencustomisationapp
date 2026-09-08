@@ -31,3 +31,4 @@ dist-ssr
 # Claude local settings (contains API keys)
 .claude/settings.local.json
 .claude/worktrees/
+.claude/
