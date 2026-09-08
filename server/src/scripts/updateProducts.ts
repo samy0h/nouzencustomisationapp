@@ -1,4 +1,4 @@
-import { PrismaClient, ProductType } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -8,12 +8,12 @@ async function updateProducts() {
   try {
     // Map of product slugs to their types and double-print support
     const productUpdates = [
-      { slug: 'tshirt-standard', type: ProductType.TSHIRT, supportsDoublePrint: true },
-      { slug: 'tshirt-oversize', type: ProductType.TSHIRT, supportsDoublePrint: true },
-      { slug: 'hoodie', type: ProductType.HOODIE, supportsDoublePrint: true },
-      { slug: 'polo', type: ProductType.POLO, supportsDoublePrint: true },
-      { slug: 'tote-bag', type: ProductType.TOTE_BAG, supportsDoublePrint: false },
-      { slug: 'cap', type: ProductType.CAP, supportsDoublePrint: false },
+      { slug: 'tshirt-standard', type: 'TSHIRT', supportsDoublePrint: true },
+      { slug: 'tshirt-oversize', type: 'TSHIRT', supportsDoublePrint: true },
+      { slug: 'hoodie', type: 'HOODIE', supportsDoublePrint: true },
+      { slug: 'polo', type: 'POLO', supportsDoublePrint: true },
+      { slug: 'tote-bag', type: 'TOTE_BAG', supportsDoublePrint: false },
+      { slug: 'cap', type: 'CAP', supportsDoublePrint: false },
     ];
 
     for (const update of productUpdates) {

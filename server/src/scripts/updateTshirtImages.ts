@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import path from 'path';
 
 const prisma = new PrismaClient();
 
@@ -91,7 +90,7 @@ async function updateTshirtStandard() {
       }
 
       for (const size of sizes) {
-        const variant = await prisma.productVariant.create({
+        await prisma.productVariant.create({
           data: {
             productId: product.id,
             color: colorInfo.name,
