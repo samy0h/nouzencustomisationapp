@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { apiBaseUrl } from '../services/api';
 import '../styles/admin.css';
 
 export default function AdminSettings() {
@@ -23,7 +24,7 @@ export default function AdminSettings() {
 
   const loadCategories = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/categories', {
+      const response = await fetch(`${apiBaseUrl}/api/categories`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
         },
@@ -37,7 +38,7 @@ export default function AdminSettings() {
 
   const loadProductTypes = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/product-types', {
+      const response = await fetch(`${apiBaseUrl}/api/product-types`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
         },
@@ -62,7 +63,7 @@ export default function AdminSettings() {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
 
-      const response = await fetch('http://localhost:3001/api/categories', {
+      const response = await fetch(`${apiBaseUrl}/api/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ export default function AdminSettings() {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3001/api/categories/${categoryId}?force=true`, {
+      const response = await fetch(`${apiBaseUrl}/api/categories/${categoryId}?force=true`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
@@ -123,7 +124,7 @@ export default function AdminSettings() {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
 
-      const response = await fetch('http://localhost:3001/api/product-types', {
+      const response = await fetch(`${apiBaseUrl}/api/product-types`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,7 +152,7 @@ export default function AdminSettings() {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3001/api/product-types/${typeId}?force=true`, {
+      const response = await fetch(`${apiBaseUrl}/api/product-types/${typeId}?force=true`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
@@ -173,7 +174,7 @@ export default function AdminSettings() {
 
   const loadUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/auth/admin/users', {
+      const response = await fetch(`${apiBaseUrl}/api/auth/admin/users`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
         },
@@ -191,7 +192,7 @@ export default function AdminSettings() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3001/api/auth/admin/users', {
+      const response = await fetch(`${apiBaseUrl}/api/auth/admin/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -220,7 +221,7 @@ export default function AdminSettings() {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3001/api/auth/admin/users/${username}`, {
+      const response = await fetch(`${apiBaseUrl}/api/auth/admin/users/${username}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
@@ -246,7 +247,7 @@ export default function AdminSettings() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3001/api/auth/admin/change-password', {
+      const response = await fetch(`${apiBaseUrl}/api/auth/admin/change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
