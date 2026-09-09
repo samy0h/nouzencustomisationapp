@@ -24,7 +24,7 @@ export default async function run(page, ui) {
     for (const n of names) {
       const loc = page.locator(`input[name="${n}"], select[name="${n}"], textarea[name="${n}"]`).first();
       if (await loc.count()) {
-        try { await loc.fill(value); return true; } catch { try { await loc.selectOption({ label: value }); return true; } catch {} }
+        try { await loc.fill(value); return true; } catch { try { await loc.selectOption({ label: value }); return true; } catch { } }
       }
     }
     return false;
@@ -39,7 +39,7 @@ export default async function run(page, ui) {
 
   // Delivery method may be radio buttons
   const radio = page.locator('input[type="radio"]').first();
-  if (await radio.count()) { await radio.check().catch(() => {}); }
+  if (await radio.count()) { await radio.check().catch(() => { }); }
 
   await page.waitForTimeout(500);
 
