@@ -193,6 +193,7 @@
   overflow: hidden;
   background: #fafafa;
   border-radius: 16px;
+  touch-action: pan-y !important; /* Allow vertical scrolling */
 }
 
 .product-image {
@@ -208,6 +209,7 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
+  touch-action: pan-y !important; /* Allow scrolling through this layer */
 }
 
 .design-canvas {
@@ -218,6 +220,7 @@
   max-width: 100% !important;
   max-height: 100% !important;
   object-fit: contain !important;
+  touch-action: manipulation; /* Allow scrolling and manipulation */
 }
 
 .canvas-editor .canvas-container,
@@ -228,6 +231,7 @@
 
 .canvas-editor .canvas-container {
   pointer-events: auto;
+  touch-action: pan-y !important; /* Allow vertical scrolling from container */
 }
 
 .printable-area {

@@ -157,7 +157,7 @@ export default function ProductDetail() {
       width: 800,
       height: 1000,
       backgroundColor: 'transparent',
-      selection: true,
+      selection: isMobileOrTablet ? false : true, // Disable selection rectangle on mobile
       preserveObjectStacking: true,
       enableRetinaScaling: true,
         clipPath: printAreaEnabled ? createPrintableClipPath() : undefined,
@@ -168,6 +168,23 @@ export default function ProductDetail() {
       fabric.Object.prototype.set({
         cornerSize: 32,
         borderScaleFactor: 2,
+      });
+
+      // Allow scrolling on mobile when not interacting with objects
+      canvas.on('mouse:down', (e) => {
+        if (!e.target) {
+          // No object clicked - allow page scroll by not preventing default
+          const canvasEl = canvasRef.current;
+          if (canvasEl) {
+            canvasEl.style.touchAction = 'pan-y';
+          }
+        } else {
+          // Object clicked - prevent scroll to allow manipulation
+          const canvasEl = canvasRef.current;
+          if (canvasEl) {
+            canvasEl.style.touchAction = 'none';
+          }
+        }
       });
     }
 
