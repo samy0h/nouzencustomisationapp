@@ -320,6 +320,8 @@ export default function ProductDetail() {
           if (!fabricCanvasRef.current) return;
 
           const canvas = fabricCanvasRef.current;
+          const isMobileOrTablet = window.innerWidth <= 1024;
+
           const scale = Math.min(
             (printableBounds.width * 0.85) / img.width!,
             (printableBounds.height * 0.85) / img.height!
@@ -335,7 +337,7 @@ export default function ProductDetail() {
             cornerColor: 'white',
             cornerStrokeColor: '#A00223',
             borderColor: '#A00223',
-            cornerSize: 10,
+            cornerSize: isMobileOrTablet ? 32 : 12,
             transparentCorners: false,
           });
           (img as fabric.Image & { fileName?: string }).fileName = file.name;
