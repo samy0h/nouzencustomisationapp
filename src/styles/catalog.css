@@ -6,6 +6,12 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+        }
+
         :root {
             --bg-primary: #FFFFFF;
             --bg-secondary: #F8F9FA;
@@ -781,8 +787,8 @@
             }
 
             .header-container {
-                padding: 0 16px;
-                gap: 8px;
+                padding: 0 12px;
+                gap: 6px;
             }
 
             .logo {
@@ -802,12 +808,12 @@
             }
 
             .header-right {
-                gap: 8px;
+                gap: 6px;
             }
 
             .theme-toggle {
-                width: 36px;
-                height: 36px;
+                width: 32px;
+                height: 32px;
             }
 
             .lang-toggle {
@@ -824,18 +830,18 @@
             }
 
             .lang-btn {
-                padding: 5px 8px;
-                font-size: 12px;
+                padding: 4px 6px;
+                font-size: 11px;
                 border-radius: 16px;
-                gap: 3px;
+                gap: 2px;
             }
 
             .lang-flag {
-                font-size: 14px;
+                font-size: 13px;
             }
 
             .lang-label {
-                font-size: 11px;
+                display: none;
             }
 
             .cart-badge {
@@ -850,17 +856,24 @@
                 border-radius: 20px;
                 gap: 6px;
                 min-width: auto;
+                white-space: nowrap;
+            }
+
+            .cart-btn span:not(.cart-badge) {
+                display: none;
             }
 
             .cart-icon {
-                width: 18px;
-                height: 18px;
+                width: 20px;
+                height: 20px;
             }
 
-            .cart-count {
-                width: 18px;
-                height: 18px;
-                font-size: 10px;
+            .cart-badge {
+                position: static;
+                width: 20px;
+                height: 20px;
+                font-size: 11px;
+                margin-left: 4px;
             }
 
             /* Mobile Hero - Responsive Aspect Ratio */
