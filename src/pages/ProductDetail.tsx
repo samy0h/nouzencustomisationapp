@@ -150,6 +150,9 @@ export default function ProductDetail() {
   useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return;
 
+    // Detect if device is mobile/tablet for larger touch targets
+    const isMobileOrTablet = window.innerWidth <= 1024;
+
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: 800,
       height: 1000,
@@ -159,6 +162,14 @@ export default function ProductDetail() {
       enableRetinaScaling: true,
         clipPath: printAreaEnabled ? createPrintableClipPath() : undefined,
     });
+
+    // Increase control sizes for mobile touch targets
+    if (isMobileOrTablet) {
+      fabric.Object.prototype.set({
+        cornerSize: 32,
+        borderScaleFactor: 2,
+      });
+    }
 
     fabricCanvasRef.current = canvas;
 
@@ -183,6 +194,18 @@ export default function ProductDetail() {
     canvas.on('selection:created', syncSelectedText);
     canvas.on('selection:updated', syncSelectedText);
     canvas.on('selection:cleared', syncSelectedText);
+
+    // Auto-select all text when entering editing mode on existing text
+    canvas.on('text:editing:entered', (e) => {
+      const textObject = e.target as fabric.IText;
+      if (textObject && textObject.text) {
+        // Use setTimeout to ensure the text box is ready
+        setTimeout(() => {
+          textObject.selectAll();
+          canvas.renderAll();
+        }, 10);
+      }
+    });
 
     return () => {
       saveCanvasForSide(printingSide);
@@ -334,6 +357,8 @@ export default function ProductDetail() {
     if (!fabricCanvasRef.current) return;
 
     const canvas = fabricCanvasRef.current;
+    const isMobileOrTablet = window.innerWidth <= 1024;
+
     const text = new fabric.IText('Your text', {
       left: printableBounds.left + printableBounds.width / 2,
       top: printableBounds.top + printableBounds.height / 2,
@@ -346,7 +371,7 @@ export default function ProductDetail() {
       cornerColor: 'white',
       cornerStrokeColor: '#A00223',
       borderColor: '#A00223',
-      cornerSize: 10,
+      cornerSize: isMobileOrTablet ? 32 : 12,
       transparentCorners: false,
     });
 
@@ -355,6 +380,11 @@ export default function ProductDetail() {
     setSelectedTextObject(text);
     setSelectedFont('Bebas Neue');
     setSelectedTextColor('#ffffff');
+    canvas.renderAll();
+
+    // Immediately enter editing mode and select all text
+    text.enterEditing();
+    text.selectAll();
     canvas.renderAll();
   };
 
