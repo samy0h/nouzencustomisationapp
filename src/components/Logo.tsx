@@ -4,7 +4,7 @@ export const Logo = () => {
       <div className="logo-icon">
         <img src="/assets/logo.jpg" alt="Nouzen Clothes logo" />
       </div>
-      <span>Nouzen Clothes</span>
+      <span className="logo-text">Nouzen Clothes</span>
     </a>
   );
 };

@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
   ];
 
   return (
-    <div className="language-switcher">
+    <div className="lang-switcher">
       {languages.map(({ code, label, flag }) => (
         <button
           key={code}
