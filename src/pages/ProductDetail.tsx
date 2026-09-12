@@ -1,3 +1,23 @@
+/**
+ * ProductDetail Component
+ *
+ * Main product customization page with Fabric.js canvas editor.
+ * Handles product variants, color/size selection, text/image customization,
+ * and order creation.
+ *
+ * Features:
+ * - Dynamic color and size selection based on available variants
+ * - Fabric.js canvas for design customization
+ * - Front/Back printing side switching
+ * - Text editing with fonts and colors
+ * - Image upload and manipulation
+ * - Mobile-responsive touch controls (32px handles on mobile)
+ * - Auto text selection on creation/editing
+ * - Natural mobile scrolling (no canvas blocking)
+ * - Design persistence per printing side
+ * - Mockup generation and order creation
+ */
+
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -12,31 +32,81 @@ import OrderForm from '../components/OrderForm';
 import '../styles/productDetail.css';
 
 export default function ProductDetail() {
+  // ============================================================================
+  // HOOKS & PARAMS
+  // ============================================================================
+
+  /** Product slug from URL params */
   const { slug } = useParams<{ slug: string }>();
+
+  /** Translation and language context */
   const { t, language } = useLanguage();
+
+  /** Cart item count for display */
   const { itemCount } = useCart();
+
+  /** Fetch product data with loading/error states */
   const { product, loading, error, retry } = useProduct(slug || '');
 
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
+
+  /** Currently selected product color */
   const [selectedColor, setSelectedColor] = useState<string>('');
+
+  /** Currently selected product size */
   const [selectedSize, setSelectedSize] = useState<string>('');
+
+  /** Active printing side: FRONT, BACK, or BOTH */
   const [printingSide, setPrintingSide] = useState<PrintingSide>('FRONT');
+
+  /** Currently selected text object on canvas (for font/color controls) */
   const [selectedTextObject, setSelectedTextObject] = useState<fabric.IText | null>(null);
+
+  /** Currently selected object on canvas (text or image) */
   const [selectedObject, setSelectedObject] = useState<fabric.Object | null>(null);
+
+  /** Filename of selected image object */
   const [selectedImageName, setSelectedImageName] = useState('');
+
+  /** Selected font for text editing */
   const [selectedFont, setSelectedFont] = useState('Bebas Neue');
+
+  /** Selected text color (hex format) */
   const [selectedTextColor, setSelectedTextColor] = useState('#ffffff');
+
+  /** Whether order form modal is visible */
   const [showOrderForm, setShowOrderForm] = useState(false);
+
+  /** Success/error message when adding to cart */
   const [cartMessage, setCartMessage] = useState('');
 
+  // ============================================================================
+  // REFS
+  // ============================================================================
+
+  /** Reference to HTML canvas element */
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  /** Reference to order form section for scrolling */
   const orderSectionRef = useRef<HTMLElement>(null);
+
+  /** Reference to Fabric.js canvas instance */
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+
+  /** Store separate designs for each printing side */
   const designsBySideRef = useRef<Record<PrintingSide, object | null>>({
     FRONT: null,
     BACK: null,
     BOTH: null,
   });
 
+  // ============================================================================
+  // PRINTABLE AREA CONFIGURATION
+  // ============================================================================
+
+  /** Default printable bounds if not configured in product */
   const defaultPrintableBounds = {
     left: 216,
     top: 164,
@@ -44,8 +114,13 @@ export default function ProductDetail() {
     height: 660,
   };
 
+  /** Get configured print area for current printing side */
   const configuredPrintArea = product?.printAreas?.find(area => area.side === printingSide);
+
+  /** Whether print area is enabled (true if not configured) */
   const printAreaEnabled = configuredPrintArea?.enabled ?? true;
+
+  /** Calculate printable bounds (normalized 0-1 to canvas 800x1000) */
   const printableBounds = configuredPrintArea
     ? {
       left: configuredPrintArea.x * 800,
@@ -55,6 +130,10 @@ export default function ProductDetail() {
     }
     : defaultPrintableBounds;
 
+  /**
+   * Create clipping path for printable area
+   * Restricts designs to stay within bounds
+   */
   const createPrintableClipPath = () => new fabric.Rect({
     left: printableBounds.left + printableBounds.width / 2,
     top: printableBounds.top + printableBounds.height / 2,
@@ -65,6 +144,11 @@ export default function ProductDetail() {
     absolutePositioned: true,
   });
 
+  // ============================================================================
+  // FONT OPTIONS
+  // ============================================================================
+
+  /** Available fonts for text customization */
   const fontOptions = [
     'Montserrat',
     'Poppins',
@@ -73,18 +157,37 @@ export default function ProductDetail() {
     'Bebas Neue',
   ];
 
+  // ============================================================================
+  // DESIGN PERSISTENCE FUNCTIONS
+  // ============================================================================
+
+  /**
+   * Save current canvas design for a specific printing side
+   * Stores design in ref for restoration when switching sides
+   */
   const saveCanvasForSide = (side: PrintingSide) => {
     if (fabricCanvasRef.current) {
       designsBySideRef.current[side] = fabricCanvasRef.current.toJSON(['fileName']);
     }
   };
 
+  /**
+   * Handle switching between printing sides (FRONT/BACK)
+   * Saves current design and loads design for new side
+   */
   const handleSideChange = (side: PrintingSide) => {
     saveCanvasForSide(printingSide);
     setPrintingSide(side);
   };
 
-  // Get unique colors from variants
+  // ============================================================================
+  // PRODUCT VARIANT LOGIC
+  // ============================================================================
+
+  /**
+   * Get unique colors from product variants
+   * Returns array of {color, colorHex} objects
+   */
   const availableColors = useMemo(() => {
     if (!product) return [];
     const colorMap = new Map<string, { color: string; colorHex: string }>();
@@ -96,7 +199,10 @@ export default function ProductDetail() {
     return Array.from(colorMap.values());
   }, [product]);
 
-  // Get available sizes for selected color
+  /**
+   * Get available sizes for currently selected color
+   * Filters variants by selected color and returns unique sizes
+   */
   const availableSizes = useMemo(() => {
     if (!product || !selectedColor) return [];
     return product.variants
@@ -146,13 +252,30 @@ export default function ProductDetail() {
   // Keep the confirmation page visible: the order form is only closed
   // when the user explicitly starts a new order (see handleOrderNow).
 
-  // Initialize Fabric.js canvas
+  // ============================================================================
+  // FABRIC.JS CANVAS INITIALIZATION
+  // ============================================================================
+
+  /**
+   * Initialize Fabric.js canvas on component mount
+   *
+   * Features:
+   * - Mobile detection (≤1024px) for responsive controls
+   * - 32px corner handles on mobile, 12px on desktop
+   * - Thicker borders on mobile (borderScaleFactor: 2)
+   * - Disabled selection rectangle on mobile (prevents scroll conflict)
+   * - Dynamic touch-action switching (scroll vs manipulate)
+   * - Auto-select text when entering editing mode
+   * - Syncs selected object with React state
+   * - Saves design when component unmounts
+   */
   useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return;
 
     // Detect if device is mobile/tablet for larger touch targets
     const isMobileOrTablet = window.innerWidth <= 1024;
 
+    // Initialize Fabric.js canvas with responsive settings
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: 800,
       height: 1000,
@@ -166,11 +289,15 @@ export default function ProductDetail() {
     // Increase control sizes for mobile touch targets
     if (isMobileOrTablet) {
       fabric.Object.prototype.set({
-        cornerSize: 32,
-        borderScaleFactor: 2,
+        cornerSize: 32,        // Large handles (32px) for fingers
+        borderScaleFactor: 2,  // Thicker borders for visibility
       });
 
-      // Allow scrolling on mobile when not interacting with objects
+      /**
+       * Dynamic touch-action switching for mobile scrolling
+       * - Empty canvas touch → allow page scroll
+       * - Object touch → allow object manipulation
+       */
       canvas.on('mouse:down', (e) => {
         if (!e.target) {
           // No object clicked - allow page scroll by not preventing default
@@ -190,6 +317,10 @@ export default function ProductDetail() {
 
     fabricCanvasRef.current = canvas;
 
+    /**
+     * Sync selected text object with React state
+     * Updates font/color controls when text is selected
+     */
     const syncSelectedText = () => {
       const activeObject = canvas.getActiveObject();
       if (!activeObject || activeObject.type !== 'i-text') {
@@ -208,11 +339,16 @@ export default function ProductDetail() {
       setSelectedTextColor(String(textObject.get('fill') || '#ffffff'));
     };
 
+    // Listen to selection events
     canvas.on('selection:created', syncSelectedText);
     canvas.on('selection:updated', syncSelectedText);
     canvas.on('selection:cleared', syncSelectedText);
 
-    // Auto-select all text when entering editing mode on existing text
+    /**
+     * Auto-select all text when entering editing mode on existing text
+     * Allows user to type immediately to replace text
+     * Uses setTimeout to ensure text box is ready before selection
+     */
     canvas.on('text:editing:entered', (e) => {
       const textObject = e.target as fabric.IText;
       if (textObject && textObject.text) {
@@ -224,6 +360,7 @@ export default function ProductDetail() {
       }
     });
 
+    // Cleanup on unmount
     return () => {
       saveCanvasForSide(printingSide);
       canvas.off('selection:created', syncSelectedText);
@@ -234,7 +371,14 @@ export default function ProductDetail() {
     };
   }, [product]);
 
-  // Restore the independent design associated with the selected printing side.
+  // ============================================================================
+  // RESTORE DESIGN WHEN SWITCHING PRINTING SIDES
+  // ============================================================================
+
+  /**
+   * Restore the independent design for the selected printing side
+   * Clears canvas and loads saved design from ref
+   */
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;

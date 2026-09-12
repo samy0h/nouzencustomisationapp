@@ -65,9 +65,10 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
       throw new AppError(`${product.name} is not available in ${item.color} / ${item.size}.`, 400);
     }
 
-    if (variant.stock <= 0) {
-      throw new AppError(`${product.name} is out of stock in ${item.color} / ${item.size}.`, 400);
-    }
+    // Stock validation removed - assume unlimited stock
+    // if (variant.stock <= 0) {
+    //   throw new AppError(`${product.name} is out of stock in ${item.color} / ${item.size}.`, 400);
+    // }
 
     const unitPrice = variant.priceOverride ?? product.price;
     return {
